@@ -1,0 +1,16 @@
+# Cargo configuration for this host.
+#
+# This host has no sudo and no system dev libs, but it has a user-level
+# sysroot at ~/.local/sysroot with pkgconf + GTK/WebKit/Soup/glib dev
+# libraries extracted from .deb files. To make cargo's build scripts and
+# cc invocations find those libraries we add `-L` linker flags here.
+#
+# The full env (PATH, LD_LIBRARY_PATH, PKG_CONFIG_PATH) is set by
+# sourcing ~/.local/rewind-env.sh before running cargo. This file
+# complements that by adding rustc-side linker args.
+
+[target.x86_64-unknown-linux-gnu]
+rustflags = [
+    "-C", "link-arg=-L/home/xiaoxin/.local/sysroot/usr/lib/x86_64-linux-gnu",
+    "-C", "link-arg=-L/home/xiaoxin/.local/sysroot/lib/x86_64-linux-gnu",
+]

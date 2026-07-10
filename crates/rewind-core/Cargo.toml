@@ -1,0 +1,18 @@
+[package]
+name = "rewind-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Portable, deterministic core engine for Rewind. No Tauri, no OS, no DB."
+
+[lib]
+name = "rewind_core"
+path = "src/lib.rs"
+
+[dependencies]
+# Intentionally minimal: no tauri, no OS-specific, no sqlx.
+# The type system enforces the engine↔adapter boundary.
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+time = { workspace = true }

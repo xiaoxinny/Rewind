@@ -1,0 +1,47 @@
+[package]
+name = "rewind"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Rewind shell — composition root that ties the engine, adapters, storage, and Tauri together."
+authors = ["Rewind contributors"]
+
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows.
+[lib]
+name = "rewind_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "rewind"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { workspace = true }
+
+[dependencies]
+# Workspace members — the engine↔adapter boundary is enforced at compile
+# time.
+rewind-core = { path = "../crates/rewind-core" }
+rewind-adapters = { path = "../crates/rewind-adapters" }
+rewind-storage = { path = "../crates/rewind-storage" }
+
+# Tauri core. `tray-icon` enables `TrayIconBuilder` in the core crate.
+# `image-png` enables `Image::from_bytes()` for PNG decoding in
+# plugins that load icons from bytes.
+tauri = { workspace = true, features = ["image-png"] }
+
+# Tauri v2 plugins — see implementation plan §4.
+tauri-plugin-notification = { workspace = true }
+tauri-plugin-autostart = { workspace = true }
+tauri-plugin-global-shortcut = { workspace = true }
+tauri-plugin-positioner = { workspace = true }
+tauri-plugin-single-instance = { workspace = true }
+tauri-plugin-store = { workspace = true }
+tauri-plugin-window-state = { workspace = true }
+
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+time = { workspace = true }

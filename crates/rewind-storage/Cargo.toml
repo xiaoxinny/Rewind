@@ -1,0 +1,16 @@
+[package]
+name = "rewind-storage"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "SQLite-backed history store for Rewind (sqlx)."
+
+[lib]
+name = "rewind_storage"
+path = "src/lib.rs"
+
+[dependencies]
+rewind-core = { path = "../rewind-core" }
+
+# sqlx and tokio are added in M6 when the first migration lands.
+# async-trait is added with sqlx.

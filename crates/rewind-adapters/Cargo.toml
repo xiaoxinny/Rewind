@@ -1,0 +1,24 @@
+[package]
+name = "rewind-adapters"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Real OS adapters for Rewind (idle, tray, notification, overlay, autostart)."
+
+[lib]
+name = "rewind_adapters"
+path = "src/lib.rs"
+
+[dependencies]
+# Only the seams rewind-core needs are visible; the actual concrete
+# adapter structs are added per-milestone.
+rewind-core = { path = "../rewind-core" }
+
+# Tauri v2 — needed by the M3 overlay adapter (M1 will share this for
+# the tray). We pull in the same workspace-managed version the shell
+# uses, with the minimum feature set we actually need (the
+# `Manager` / `WebviewWindow` / monitor APIs and `tauri::AppHandle`).
+tauri = { workspace = true }
+
+# Convenient error handling matching rewind-core's style.
+thiserror = { workspace = true }

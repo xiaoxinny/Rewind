@@ -1,0 +1,31 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/*",
+    "src-tauri",
+]
+
+# Shared toolchain settings for the whole workspace.
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+license = "MIT"
+
+# Centralised dependency pins so sub-crates don't drift.
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+time = { version = "0.3", features = ["macros", "local-offset"] }
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-build = { version = "2", features = [] }
+tauri-plugin-notification = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-positioner = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-store = "2"
+tauri-plugin-window-state = "2"
+
+# Used by the 1 Hz tick loop (`src-tauri/src/runtime.rs`).
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros", "time", "sync"] }
