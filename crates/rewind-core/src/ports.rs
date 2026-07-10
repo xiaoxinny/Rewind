@@ -9,6 +9,7 @@ use std::time::Duration;
 
 use thiserror::Error;
 
+use crate::clock::Timestamp;
 use crate::events::{BreakPresentation, Notification, TrayMenuItem, TrayStatus};
 use crate::model::{
     aggregate::DailyAggregate, break_record::BreakRecord, hydration::HydrationEntry,
@@ -142,15 +143,68 @@ pub trait Autostart {
 // History repo (§8a, M6 — stub satisfied today via `NoopHistoryRepo`)
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// History repo errors (§8a, M6).
+// ---------------------------------------------------------------------------
+
+/// Errors a `HistoryRepo` can report. Defined here (in core, not in
+/// `rewind-storage`) so the trait boundary stays free of sqlx. The
+/// storage crate wraps `sqlx::Error` into `Backend` for the shell.
+#[derive(Debug, Clone, Error)]
+pub enum HistoryRepoError {
+    /// Migration runner failed (file missing / checksum mismatch /
+    /// unsupported target).
+    #[error("history migration failed: {0}")]
+    Migration(String),
+
+    /// The DB driver returned an error.
+    #[error("history backend error: {0}")]
+    Backend(String),
+
+    /// A row was malformed (e.g. invalid `BreakKind` text label)
+    /// and could not be deserialised back into the typed model.
+    #[error("history row malformed: {0}")]
+    Malformed(String),
+}
+
+/// Convenience alias used by `HistoryRepo` implementations.
+pub type RepoResult<T> = std::result::Result<T, HistoryRepoError>;
+
+// ---------------------------------------------------------------------------
+// History repo (§8a, M6 — `SqliteHistoryRepo` is in `rewind-storage`)
+// ---------------------------------------------------------------------------
+
 /// Append-only history access. Real impl lives in `rewind-storage`
-/// (lands in M6). For M1 a no-op fake is acceptable because the
-/// engine itself does not depend on it (the shell would).
-pub trait HistoryRepo {
-    fn append_session(&self, s: &SessionRecord);
-    fn append_break(&self, b: &BreakRecord);
-    fn append_hydration(&self, h: &HydrationEntry);
-    fn upsert_daily(&self, a: &DailyAggregate);
-    fn today(&self) -> DailyAggregate;
+/// (`SqliteHistoryRepo` — see `crates/rewind-storage/src/repo.rs`).
+/// The engine does not depend on this trait; the shell does. The
+/// shape mirrors `crates/rewind-storage/src/migrations/0001_init.sql`
+/// 1-for-1.
+///
+/// **M6** — the trait went from unit-returning to `async fn` so a
+/// SQLite I/O wait can never block the tick loop. The engine is
+/// unaffected (it does not depend on this trait). The shell calls
+/// these from inside the tokio runtime.
+#[async_trait::async_trait]
+pub trait HistoryRepo: Send + Sync {
+    /// Persist a single session record. Returns the new row id.
+    /// Implementations are expected to be **fail-loud** — a database
+    /// outage should never be silently swallowed.
+    async fn append_session(&self, s: &SessionRecord) -> RepoResult<i64>;
+
+    /// Persist a single break record. Returns the new row id.
+    async fn append_break(&self, b: &BreakRecord) -> RepoResult<i64>;
+
+    /// Persist a single hydration entry. Returns the new row id.
+    async fn append_hydration(&self, h: &HydrationEntry) -> RepoResult<i64>;
+
+    /// Insert or update the daily rollup for `a.day`. Idempotent —
+    /// called on every engine `Tick()` so re-issuing with the same
+    /// counters must be safe.
+    async fn upsert_daily(&self, a: &DailyAggregate) -> RepoResult<()>;
+
+    /// Read today's rollup. Returns a zero-counter
+    /// `DailyAggregate` for "today" when no row exists yet.
+    async fn today(&self, now: Timestamp) -> RepoResult<DailyAggregate>;
 }
 
 #[cfg(test)]

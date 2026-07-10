@@ -1,19 +1,21 @@
 //! Rewind shell — composition root.
 //!
 //! Ties the engine, adapters, and storage together behind Tauri v2.
-//! M1: registers all plugins, brings up the tray icon, runs the 1 Hz
-//! tick loop, dispatches CoreEvents to the frontend, exposes IPC
-//! commands for the Svelte UI.
+//! M6 wires in the SQLite-backed history repo (`StorageApp`) +
+//! the `tauri-plugin-store` based `ConfigStore` for `AppConfig`.
 //!
 //! Sub-modules:
 //!   * `adapters.rs`        — bundles the OS/UI adapters
+//!   * `config_store.rs`    — `tauri-plugin-store` ↔ `AppConfig`
 //!   * `ipc.rs`             — `#[tauri::command]`s → `CoreCommand`s
 //!   * `overlay_adapter.rs` — Tauri-backed `OverlayController`
 //!   * `runtime.rs`         — 1 Hz tick loop spawned from `setup`
+//!   * `storage_app.rs`     — `SqliteHistoryRepo` convenience handle
+//!   * `storage_helpers.rs` — small helpers shared with the storage crate
+//!   * `wiring.rs`          — DI: build Engine + adapters + storage
 
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
-use rewind_core::{AppConfig, Clock, Engine, RealClock};
 use tauri::{
     menu::{Menu, MenuItem},
     tray::TrayIconBuilder,
@@ -21,21 +23,29 @@ use tauri::{
 };
 
 mod adapters;
+mod config_store;
+mod idle_handle;
 mod ipc;
 mod overlay_adapter;
 mod runtime;
+mod storage_app;
+mod storage_helpers;
+mod wiring;
 
 pub use adapters::Adapters;
+pub use config_store::{load_or_default as load_config_or_default, save as save_config};
+pub use idle_handle::IdleHandle;
 pub use ipc::{
-    get_break_kind_label, get_engine_snapshot, get_pause_reason_label, log_water,
-    pause_toggle, postpone_break, set_strictness, skip_break, start_focus, update_config,
-    EngineSnapshot,
+    clear_history, export_data, get_break_kind_label, get_engine_snapshot, get_pause_reason_label,
+    get_recent_hydration, get_recent_sessions, get_today, log_water, pause_toggle, postpone_break,
+    set_autostart, set_strictness, skip_break, start_focus, update_config, EngineSnapshot,
+    ExportPayload,
 };
+pub use storage_app::{StorageApp, StorageAppError};
+pub use wiring::Wiring;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let clock: Arc<dyn Clock> = Arc::new(RealClock);
-
     tauri::Builder::default()
         // Tauri v2 plugins — see implementation plan §4.
         .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
@@ -55,39 +65,64 @@ pub fn run() {
         .plugin(tauri_plugin_positioner::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_window_state::Builder::new().build())
-        .setup({
-            let clock = clock.clone();
-            move |app| {
-                // Build the engine with a default config. (M6 will
-                // load the saved config from the store; for M1 we
-                // ship defaults and let ConfigUpdated overwrite.)
-                let initial_config = AppConfig::default();
-                let now = clock.now();
-                let engine = Arc::new(Mutex::new(Engine::new(now, initial_config)));
+        .setup(|app| {
+            // Load AppConfig from the JSON store (or seed defaults).
+            let initial_config = config_store::load_or_default(&app.handle());
 
-                // Build adapters from the app handle.
-                let adapter_bundle = Adapters::build(app.handle());
+            // Resolve app_data_dir before wiring builds the storage
+            // pool (storage needs the directory to exist).
+            let app_data_dir = app
+                .path()
+                .app_data_dir()
+                .unwrap_or_else(|_| std::env::temp_dir().join("com.rewind.app"));
 
-                // Build the tray. The tray stays alive for the
-                // lifetime of the app; runtime.rs updates its tooltip.
-                build_tray(app.handle())?;
+            // Build the wiring (engine, adapters, storage). This
+            // must be `block_on`-safe: the setup callback runs
+            // synchronously inside Tauri's startup, before the
+            // tokio runtime is opened. We create a single-threaded
+            // runtime inline so the storage open + migrate can
+            // complete before we hand off to Tauri's main loop.
+            let wiring = {
+                let rt = tokio::runtime::Builder::new_current_thread()
+                    .enable_all()
+                    .build()
+                    .expect("setup runtime");
+                rt.block_on(Wiring::build(&app.handle(), app_data_dir, initial_config))
+            };
 
-                // Spawn the 1 Hz tick loop.
-                runtime::start(app.handle().clone(), engine.clone(), adapter_bundle, clock);
+            // Build the tray.
+            build_tray(app.handle())?;
 
-                // Register the kill-switch global shortcut. It hides
-                // the overlay window; safe to bind even before the
-                // overlay is visible (clicking it with nothing
-                // showing is a no-op).
-                if let Err(e) = register_kill_switch(app.handle()) {
-                    eprintln!("Rewind: failed to register kill switch: {e}");
-                }
+            // Spawn the 1 Hz tick loop on Tauri's tokio runtime.
+            let engine = wiring.engine.clone();
+            let adapters = Adapters::build(
+                app.handle(),
+                wiring.idle.clone(),
+                wiring.overlay.clone(),
+                wiring.storage.clone(),
+            );
+            runtime::start(
+                app.handle().clone(),
+                engine,
+                adapters,
+                wiring.clock,
+                wiring.storage.clone(),
+            );
 
-                // Make the engine reachable from IPC commands.
-                app.manage(engine);
-
-                Ok(())
+            // Register the kill-switch global shortcut. It hides
+            // the overlay window; safe to bind even before the
+            // overlay is visible.
+            if let Err(e) = register_kill_switch(app.handle()) {
+                eprintln!("Rewind: failed to register kill switch: {e}");
             }
+
+            // Make the engine + storage + idle-handle reachable from
+            // IPC commands.
+            app.manage(wiring.engine);
+            app.manage(wiring.storage);
+            app.manage(IdleHandle::new(wiring.idle));
+
+            Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             start_focus,
@@ -97,7 +132,13 @@ pub fn run() {
             log_water,
             update_config,
             set_strictness,
+            set_autostart,
             get_engine_snapshot,
+            get_today,
+            get_recent_sessions,
+            get_recent_hydration,
+            export_data,
+            clear_history,
             get_break_kind_label,
             get_pause_reason_label,
         ])
@@ -105,10 +146,8 @@ pub fn run() {
         .expect("error while running tauri application");
 }
 
-/// Build the system tray icon. The tray stays alive for the
-/// lifetime of the app; runtime.rs updates its tooltip on every
-/// tick so the countdown stays current. The menu is intentionally
-/// small in M1 — a richer dynamic menu lands later (M3).
+/// Build the system tray icon. Stays alive for the lifetime of the
+/// app; `runtime.rs` updates its tooltip on every tick.
 fn build_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
     let open_item = MenuItem::with_id(app, "open", "Open Rewind", true, None::<&str>)?;
     let pause_item = MenuItem::with_id(app, "pause", "Pause / Resume", true, None::<&str>)?;
@@ -131,9 +170,6 @@ fn build_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
                 }
             }
             "pause" => {
-                // Emit a CoreCommand to the engine so the state machine
-                // pauses. The tick loop will pick it up on the next
-                // pass and emit the resulting state change.
                 use tauri::Emitter;
                 let _ = app.emit("tray-pause-toggle", ());
             }
@@ -145,11 +181,7 @@ fn build_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
     Ok(())
 }
 
-/// Register the kill-switch global shortcut (`Ctrl+Alt+Shift+Esc` on
-/// every platform). When the user hits it, hide the overlay window
-/// if it's currently visible. This is the only way to dismiss a
-/// `Strict` overlay — without it, a bug in the engine could leave
-/// the user locked out.
+/// Register the kill-switch global shortcut (`Ctrl+Alt+Shift+Esc`).
 fn register_kill_switch(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
@@ -170,3 +202,8 @@ fn register_kill_switch(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error
     app.global_shortcut().register(kill)?;
     Ok(())
 }
+
+/// Public re-export of the wiring pipeline. Callers (mostly tests)
+/// can ignore this — only the main entry point uses it.
+#[allow(dead_code)]
+pub(crate) fn handle() {}

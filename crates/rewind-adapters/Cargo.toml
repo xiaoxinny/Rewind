@@ -10,7 +10,16 @@ name = "rewind_adapters"
 path = "src/lib.rs"
 
 [features]
-default = ["x11-idle"]
+# x11-idle is **off by default** so the workspace build doesn't pull
+# libX11.a (non-PIC) into the Tauri dylib. To build standalone tests
+# of `rewind-adapters` that exercise the real user-idle path, pass
+# `--features x11-idle` explicitly.
+#
+# This is a deliberate inversion of the usual "default = [...feature]"
+# pattern: the *primary user* of this crate is the Tauri binary,
+# which must not link libX11. The X11 backend is only useful for
+# `cargo test -p rewind-adapters --features x11-idle` style invocations
+# that exercise the real backend in a desktop session.
 x11-idle = ["dep:user-idle"]
 
 [dependencies]

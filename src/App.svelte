@@ -1,11 +1,41 @@
 <script lang="ts">
-  // Top-level Svelte 5 shell for the Rewind dashboard. M0 is a stub:
-  // it renders placeholder cards for the four pillars (eye breaks,
-  // exercises, hydration, posture) and a "Today" summary line. The
-  // real data flow lands in M1 (`core-event` subscription) and M6
-  // (history rollup).
+  // Top-level Svelte 5 shell for the Rewind dashboard. M6 introduces:
+  //   * a simple route state ($state) — no router dependency
+  //   * bootstrap() that wires the engine + storage listeners on mount
+  //   * nav links between Dashboard / Settings / Stats
 
-  // import { invoke } from "@tauri-apps/api/core";
+  import { onMount } from "svelte";
+  import Dashboard from "./routes/Dashboard.svelte";
+  import Settings from "./routes/Settings.svelte";
+  import Stats from "./routes/Stats.svelte";
+  import { bootstrap } from "./lib/stores.svelte";
+  import type { UnlistenFn } from "@tauri-apps/api/event";
+
+  // Simple route state — no router dependency. M6 ships a single
+  // shell; routing could move to a real router post-v1.
+  type Route = "dashboard" | "settings" | "stats";
+  let route = $state<Route>("dashboard");
+
+  let teardown: UnlistenFn | null = null;
+
+  onMount(() => {
+    let cancelled = false;
+    bootstrap().then((unlisten) => {
+      if (cancelled) {
+        unlisten();
+      } else {
+        teardown = unlisten;
+      }
+    });
+    return () => {
+      cancelled = true;
+      if (teardown) teardown();
+    };
+  });
+
+  function goto(next: Route): void {
+    route = next;
+  }
 </script>
 
 <main>
@@ -14,28 +44,38 @@
     <p class="tagline">Rest, and rewind, for you and your eyes.</p>
   </header>
 
-  <section class="today">
-    <h2>Today</h2>
-    <p>No data yet — the engine starts in M1.</p>
-  </section>
+  <nav class="tabs" aria-label="Sections">
+    <button
+      type="button"
+      class:active={route === "dashboard"}
+      onclick={() => goto("dashboard")}
+    >
+      Dashboard
+    </button>
+    <button
+      type="button"
+      class:active={route === "settings"}
+      onclick={() => goto("settings")}
+    >
+      Settings
+    </button>
+    <button
+      type="button"
+      class:active={route === "stats"}
+      onclick={() => goto("stats")}
+    >
+      Stats
+    </button>
+  </nav>
 
-  <section class="pillars">
-    <article>
-      <h3>Eye breaks</h3>
-      <p>20-20-20 micro-breaks, every 20 min.</p>
-    </article>
-    <article>
-      <h3>Eye exercises</h3>
-      <p>Guided rest-break exercises (palming, near/far, blink, figure-8).</p>
-    </article>
-    <article>
-      <h3>Hydration</h3>
-      <p>Adaptive, capped, gentle reminders.</p>
-    </article>
-    <article>
-      <h3>Posture</h3>
-      <p>Stand/stretch nudges, coalesced onto rest breaks.</p>
-    </article>
+  <section class="route-host">
+    {#if route === "dashboard"}
+      <Dashboard />
+    {:else if route === "settings"}
+      <Settings />
+    {:else if route === "stats"}
+      <Stats />
+    {/if}
   </section>
 </main>
 
@@ -47,10 +87,15 @@
     color: #e6edf3;
   }
 
+  :global(button) {
+    font: inherit;
+    color: inherit;
+  }
+
   main {
     max-width: 880px;
     margin: 0 auto;
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1.5rem 4rem;
   }
 
   header h1 {
@@ -60,40 +105,38 @@
   }
 
   .tagline {
-    margin: 0 0 2rem;
+    margin: 0 0 1rem;
     color: #8b949e;
     font-style: italic;
   }
 
-  .today {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
+  .tabs {
+    display: flex;
+    gap: 0.25rem;
+    margin: 0 0 1.5rem;
+    border-bottom: 1px solid #30363d;
   }
 
-  .pillars {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-  }
-
-  article {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
-  }
-
-  article h3 {
-    margin: 0 0 0.5rem;
-    font-size: 1rem;
-  }
-
-  article p {
-    margin: 0;
+  .tabs button {
+    appearance: none;
+    background: transparent;
+    border: none;
     color: #8b949e;
-    font-size: 0.875rem;
+    padding: 0.5rem 0.875rem;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+
+  .tabs button:hover {
+    color: #e6edf3;
+  }
+
+  .tabs button.active {
+    color: #e6edf3;
+    border-bottom-color: #58a6ff;
+  }
+
+  .route-host {
+    display: block;
   }
 </style>

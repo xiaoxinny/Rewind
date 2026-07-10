@@ -16,3 +16,6 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 time = { workspace = true }
+# Async-traits for `HistoryRepo` so the shell can keep a
+# `Arc<dyn HistoryRepo>` and call into it through the trait object.
+async-trait = { workspace = true }

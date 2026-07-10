@@ -18,6 +18,17 @@ pub enum BreakKind {
     Rest,
 }
 
+impl BreakKind {
+    /// Lower-case stable string label for sqlite / JSON. Plan §8a
+    /// uses `"micro"` and `"rest"`.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            BreakKind::Micro => "micro",
+            BreakKind::Rest => "rest",
+        }
+    }
+}
+
 impl fmt::Display for BreakKind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {

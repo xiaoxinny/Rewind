@@ -1,32 +1,39 @@
-//! Adapters — bundles the concrete implementations the shell hands
-//! to the engine. Lives in `src-tauri/` because the implementations
-//! are tauri-bound (the plan §4 actually puts these in
-//! `rewind-adapters`, but the overlay and tray adapters need tauri
-//! types — so the tauri-bound ones live here, and the platform-only
-//! `idle` adapter lives in `rewind-adapters`).
+//! `Adapters` — bundles the concrete adapter instances that the
+//! tick loop dispatches to. Lives in the shell because most of the
+//! real implementations (overlay, tray, store, autostart) need
+//! Tauri types. The platform-only `IdleSource` lives in
+//! `rewind-adapters` so the engine ↔ OS edge is shared with
+//! non-Tauri use cases (e.g. a future CLI test harness).
 
+use rewind_core::ports::IdleSource;
 use std::sync::Arc;
 
-use rewind_adapters::idle::pick;
-use rewind_core::ports::IdleSource;
-
 use crate::overlay_adapter::TauriOverlay;
+use crate::storage_app::StorageApp;
 
-/// All the OS / UI adapters the engine owns. Cheap to clone — each
-/// field is itself cheap (Arc or AppHandle).
+/// Bundle the tick loop needs. Cheap to clone — each field is
+/// itself cheap.
 #[derive(Clone)]
 pub struct Adapters {
     pub idle: Arc<dyn IdleSource>,
     pub overlay: TauriOverlay,
+    pub storage: StorageApp,
 }
 
 impl Adapters {
-    /// Build the default adapter bundle. Call this from
-    /// `setup(|app| …)` after the engine is constructed.
-    pub fn build(app: &tauri::AppHandle) -> Self {
+    /// Build the default bundle. Called from `setup` after the
+    /// composition root has assembled the inputs.
+    pub fn build(
+        app: &tauri::AppHandle,
+        idle: Arc<dyn IdleSource>,
+        overlay: TauriOverlay,
+        storage: StorageApp,
+    ) -> Self {
+        let _ = app; // future-proof: tray/icon access will live here
         Self {
-            idle: Arc::from(pick()),
-            overlay: TauriOverlay::new(app.clone()),
+            idle,
+            overlay,
+            storage,
         }
     }
 }

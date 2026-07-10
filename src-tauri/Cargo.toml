@@ -22,11 +22,11 @@ tauri-build = { workspace = true }
 
 [dependencies]
 # Workspace members — the engine↔adapter boundary is enforced at compile
-# time. The Tauri binary does **not** need the `x11-idle` feature from
-# `rewind-adapters` (that pulls libX11.a into the Tauri dylib and
-# breaks the Tauri link on Debian), so we disable it explicitly.
+# time. The Tauri binary does NOT need the `x11-idle` feature from
+# `rewind-adapters`; that feature is **off by default** in
+# `rewind-adapters` (see its Cargo.toml) precisely so this works.
 rewind-core = { path = "../crates/rewind-core" }
-rewind-adapters = { path = "../crates/rewind-adapters", default-features = false }
+rewind-adapters = { path = "../crates/rewind-adapters" }
 rewind-storage = { path = "../crates/rewind-storage" }
 
 # Tauri core. `tray-icon` enables `TrayIconBuilder` in the core crate.

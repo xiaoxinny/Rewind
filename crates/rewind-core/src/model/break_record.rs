@@ -54,6 +54,25 @@ impl BreakRecord {
             exercise_id: None,
         }
     }
+
+    /// Builder-style: set the outcome.
+    pub fn with_outcome(mut self, outcome: BreakOutcome) -> Self {
+        self.outcome = outcome;
+        self
+    }
+
+    /// Builder-style: set the session_id (used when the storage
+    /// layer wants to reuse a constructed record).
+    pub fn with_session(mut self, session_id: i64) -> Self {
+        self.session_id = session_id;
+        self
+    }
+
+    /// Builder-style: set `exercise_id`.
+    pub fn with_exercise(mut self, id: impl Into<String>) -> Self {
+        self.exercise_id = Some(id.into());
+        self
+    }
 }
 
 #[cfg(test)]

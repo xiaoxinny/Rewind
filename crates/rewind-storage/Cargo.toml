@@ -12,5 +12,31 @@ path = "src/lib.rs"
 [dependencies]
 rewind-core = { path = "../rewind-core" }
 
-# sqlx and tokio are added in M6 when the first migration lands.
-# async-trait is added with sqlx.
+# sqlx + SQLite + migration runner. Uses plain `sqlx::query(...)`
+# bindings rather than the `sqlx::query!` macros so a build-time
+# `DATABASE_URL` is not needed.
+sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio", "migrate"] }
+
+# Wraps `async fn` in traits so the shell can hold an
+# `Arc<dyn HistoryRepo>` (the engine does *not* hold a trait object —
+# just the shell does, for the IPC layer to dispatch to).
+async-trait = "0.1"
+
+# Tracing so DB errors surface in the same stream as the rest of
+# the shell (rather than vanishing into the void).
+tracing = "0.1"
+
+# The async runtime for `sqlx::SqlitePool`. We only need `rt` /
+# `macros` here (and `sync` for tests) — the heavier multi-thread
+# runtime lives in `src-tauri`'s tokio build.
+tokio = { workspace = true }
+
+# Same time / serde / thiserror setup as `rewind-core`.
+time = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+# `tokio::test` drives the async tests.
+tokio = { workspace = true, features = ["rt", "macros", "rt-multi-thread"] }

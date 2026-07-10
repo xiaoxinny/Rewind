@@ -26,6 +26,10 @@ tauri-plugin-positioner = "2"
 tauri-plugin-single-instance = "2"
 tauri-plugin-store = "2"
 tauri-plugin-window-state = "2"
+# Used by `rewind-core::ports::HistoryRepo` (M6) to allow async-trait
+# dispatch from a trait object — the shell holds an
+# `Arc<dyn HistoryRepo>` and needs the macro on the core side too.
+async-trait = "0.1"
 
 # Used by the 1 Hz tick loop (`src-tauri/src/runtime.rs`).
 tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros", "time", "sync"] }
