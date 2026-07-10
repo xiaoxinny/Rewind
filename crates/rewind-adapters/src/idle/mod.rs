@@ -19,7 +19,7 @@
 
 use std::time::Duration;
 
-use rewind_core::ports::{IdleError, IdleReliability, IdleSource};
+use rewind_core::ports::{IdleError, IdleSource};
 
 pub mod degraded;
 pub mod wayland;
@@ -119,6 +119,7 @@ fn is_macos() -> bool {
 }
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // Shared helpers (use across backends)
 // ---------------------------------------------------------------------------
 
@@ -127,12 +128,12 @@ fn is_macos() -> bool {
 /// Anything we cannot classify as `Unsupported` (e.g. the compositor
 /// explicitly told us "I don't support idle") flows through here so
 /// the engine retries next tick rather than degrading prematurely.
-#[allow(dead_code)] // exposed for future per-backend adapter code; not all call-sites are live yet.
+#[allow(dead_code)]
 fn transient(msg: impl Into<String>) -> IdleError {
     IdleError::Transient(msg.into())
 }
 
-#[allow(dead_code)] // ditto.
+#[allow(dead_code)]
 fn unsupported(msg: impl Into<String>) -> IdleError {
     IdleError::Unsupported(msg.into())
 }
@@ -219,11 +220,6 @@ mod tests {
         // or returning something out of the known range.
         let s = pick();
         let r = s.reliability();
-        assert!(matches!(
-            r,
-            IdleReliability::Reliable
-                | IdleReliability::Unreliable
-                | IdleReliability::Unavailable
-        ));
+        assert!(matches!(r, IdleReliability::Reliable | IdleReliability::Unreliable | IdleReliability::Unavailable));
     }
 }

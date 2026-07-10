@@ -131,7 +131,7 @@ impl SessionMachine {
     pub fn new(now: Millis, config: &AppConfig) -> Self {
         let micro = config.breaks.micro_interval().as_millis() as Millis;
         let rest = config.breaks.rest_interval().as_millis() as Millis;
-        let mut m = Self {
+        let m = Self {
             state: SessionState::Focus,
             timers: Timers {
                 next_micro_at: Some(now.saturating_add(micro)),
