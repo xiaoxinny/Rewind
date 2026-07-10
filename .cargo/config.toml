@@ -13,4 +13,8 @@
 rustflags = [
     "-C", "link-arg=-L/home/xiaoxin/.local/sysroot/usr/lib/x86_64-linux-gnu",
     "-C", "link-arg=-L/home/xiaoxin/.local/sysroot/lib/x86_64-linux-gnu",
+    # user-idle's libX11.a needs libxcb explicitly; some distros
+    # don't have it on the default linker search path for transitive
+    # deps. Force-link it.
+    "-C", "link-arg=-lxcb",
 ]

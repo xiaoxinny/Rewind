@@ -10,9 +10,10 @@ pub mod hydration;
 pub mod posture;
 pub mod reminder;
 
-pub use coordinator::ReminderCoordinator;
+pub use coordinator::{CoordinatorConfig, ReminderCoordinator};
+pub use hydration::{HydrationScheduler, HydrationSchedulerConfig};
+pub use posture::{PostureScheduler, PostureSchedulerConfig};
 pub use reminder::{Priority, Reminder, ReminderKind};
 
-// M5 will populate hydration and posture schedulers; coordinators
-// arrive in M2/M5. Keeping the modules declared so the engine can
-// refer to `scheduler::coordinator::ReminderCoordinator` placeholder.
+// Modules remain independent and pure; the engine composes their
+// candidates through `ReminderCoordinator` on each tick.

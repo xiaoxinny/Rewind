@@ -212,16 +212,8 @@ impl SessionMachine {
                 // Both micro and rest timers might fire; pick whichever
                 // is due first. Micro beats rest at the same target
                 // (more frequent = more important to the user).
-                let micro_due = self
-                    .timers
-                    .next_micro_at
-                    .map(|t| now >= t)
-                    .unwrap_or(false);
-                let rest_due = self
-                    .timers
-                    .next_rest_at
-                    .map(|t| now >= t)
-                    .unwrap_or(false);
+                let micro_due = self.timers.next_micro_at.map(|t| now >= t).unwrap_or(false);
+                let rest_due = self.timers.next_rest_at.map(|t| now >= t).unwrap_or(false);
                 if micro_due || rest_due {
                     // Prefer rest if it's due and (micro not due OR
                     // rest is sooner). For M1 simplicity: prefer rest
@@ -255,8 +247,10 @@ impl SessionMachine {
                     SessionState::RestBreak { .. } => rest_dur,
                     _ => 0,
                 };
-                if !matches!(self.state, SessionState::Focus | SessionState::Paused { .. })
-                    && idle.as_secs() >= break_dur
+                if !matches!(
+                    self.state,
+                    SessionState::Focus | SessionState::Paused { .. }
+                ) && idle.as_secs() >= break_dur
                 {
                     let kind = self.state.break_kind().unwrap_or(BreakKind::Micro);
                     self.end_break(kind, BreakOutcome::Natural, now, &mut events);
@@ -305,7 +299,9 @@ impl SessionMachine {
         let mut events = Vec::new();
         self.last_mono = now;
         let new_state = match &self.state {
-            SessionState::Paused { reason: PauseReason::Manual } => SessionState::Focus,
+            SessionState::Paused {
+                reason: PauseReason::Manual,
+            } => SessionState::Focus,
             // From anything else (Focus, PreBreak, break, Postponed,
             // Paused{Idle}) → Paused{Manual}.
             _ => SessionState::Paused {
@@ -398,7 +394,10 @@ impl SessionMachine {
         // Preserve any pre-existing `DismissBreak` semantics: if
         // a break is in flight we drop it without logging an
         // outcome — the user wasn't there.
-        if matches!(self.state, SessionState::MicroBreak { .. } | SessionState::RestBreak { .. }) {
+        if matches!(
+            self.state,
+            SessionState::MicroBreak { .. } | SessionState::RestBreak { .. }
+        ) {
             events.push(SessionEvent::DismissBreak);
             self.timers.clear_break_timers();
         }
@@ -633,7 +632,10 @@ mod tests {
         let events = m.tick(at, Duration::ZERO);
         assert!(events.iter().any(|e| matches!(
             e,
-            SessionEvent::StateChanged(SessionState::PreBreak { kind: BreakKind::Micro, .. })
+            SessionEvent::StateChanged(SessionState::PreBreak {
+                kind: BreakKind::Micro,
+                ..
+            })
         )));
 
         // Advance through the pre-break countdown (10s).
@@ -703,7 +705,9 @@ mod tests {
     #[test]
     fn gentle_allows_skip_and_logs_skipped() {
         let mut m = SessionMachine::new(0, &default_cfg());
-        m.state = SessionState::MicroBreak { remaining_ms: 10_000 };
+        m.state = SessionState::MicroBreak {
+            remaining_ms: 10_000,
+        };
         let events = m.skip_break(0);
         assert!(events.iter().any(|e| matches!(
             e,
@@ -728,9 +732,10 @@ mod tests {
 
         // 1st postpone: ok.
         let events = m.postpone(0);
-        assert!(events
-            .iter()
-            .any(|e| matches!(e, SessionEvent::StateChanged(SessionState::Postponed { .. }))));
+        assert!(events.iter().any(|e| matches!(
+            e,
+            SessionEvent::StateChanged(SessionState::Postponed { .. })
+        )));
         assert_eq!(m.postpone_count(), 1);
 
         // After timer expires, we land back in PreBreak.
@@ -780,9 +785,12 @@ mod tests {
     fn manual_pause_and_resume() {
         let mut m = SessionMachine::new(0, &default_cfg());
         let events = m.pause_toggle(100);
-        assert!(events
-            .iter()
-            .any(|e| matches!(e, SessionEvent::StateChanged(SessionState::Paused { reason: PauseReason::Manual }))));
+        assert!(events.iter().any(|e| matches!(
+            e,
+            SessionEvent::StateChanged(SessionState::Paused {
+                reason: PauseReason::Manual
+            })
+        )));
         let events = m.pause_toggle(200);
         assert!(events
             .iter()
@@ -792,7 +800,9 @@ mod tests {
     #[test]
     fn manual_pause_during_break_releases_back_to_focus_with_rearm() {
         let mut m = SessionMachine::new(0, &default_cfg());
-        m.state = SessionState::MicroBreak { remaining_ms: 5_000 };
+        m.state = SessionState::MicroBreak {
+            remaining_ms: 5_000,
+        };
         m.timers.break_ends_at = Some(5_000);
         let _ = m.pause_toggle(0);
         assert!(matches!(
@@ -824,7 +834,9 @@ mod tests {
     #[test]
     fn idle_pause_during_break_drops_overlay_with_no_outcome() {
         let mut m = SessionMachine::new(0, &default_cfg());
-        m.state = SessionState::MicroBreak { remaining_ms: 5_000 };
+        m.state = SessionState::MicroBreak {
+            remaining_ms: 5_000,
+        };
         m.timers.break_ends_at = Some(5_000);
         let events = m.idle_pause(0);
         assert!(events
@@ -870,7 +882,9 @@ mod tests {
     #[test]
     fn natural_idle_satisfies_micro_break() {
         let mut m = SessionMachine::new(0, &default_cfg());
-        m.state = SessionState::MicroBreak { remaining_ms: 1_000 };
+        m.state = SessionState::MicroBreak {
+            remaining_ms: 1_000,
+        };
         m.timers.break_ends_at = Some(20_000);
         // idle = 25s (>= 20s micro duration) → natural satisfaction.
         let events = m.tick(15_000, Duration::from_secs(25));
@@ -893,7 +907,7 @@ mod tests {
         // Reach the micro-fire time exactly: zero remaining until pre-break end.
         let next = m.timers.next_micro_at.unwrap();
         m.tick(next, Duration::ZERO); // enter PreBreak
-        // Now we're in PreBreak with remaining_ms = 10s.
+                                      // Now we're in PreBreak with remaining_ms = 10s.
         if let SessionState::PreBreak { remaining_ms, .. } = m.state() {
             assert_eq!(Duration::from_millis(remaining_ms), Duration::from_secs(10));
         } else {
@@ -909,10 +923,9 @@ mod tests {
         let at = 20 * 60 * 1_000;
         let events = m.tick(at, Duration::ZERO);
         // No PreBreak state.
-        assert!(!events.iter().any(|e| matches!(
-            e,
-            SessionEvent::StateChanged(SessionState::PreBreak { .. })
-        )));
+        assert!(!events
+            .iter()
+            .any(|e| matches!(e, SessionEvent::StateChanged(SessionState::PreBreak { .. }))));
         // Direct to MicroBreak.
         assert!(matches!(m.state(), SessionState::MicroBreak { .. }));
         assert!(events

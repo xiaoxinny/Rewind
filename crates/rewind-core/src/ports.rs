@@ -56,7 +56,9 @@ pub enum IdleError {
 /// `degraded::DegradedIdleSource` for GNOME/headless).
 ///
 /// Synchronous & cheap; the shell layer turns this into tokio async.
-pub trait IdleSource {
+/// `Send + Sync` because the engine lives behind an `Arc<Mutex<…>>`
+/// in a tokio task spawned from Tauri's `setup` closure.
+pub trait IdleSource: Send + Sync {
     /// Seconds since last user input. **No window titles, app names,
     /// keystrokes** — only the duration.
     fn idle_time(&self) -> Result<Duration, IdleError>;

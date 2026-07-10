@@ -232,11 +232,17 @@ mod tests {
             "Rest break soon"
         );
         assert_eq!(
-            SessionState::MicroBreak { remaining_ms: 18_000 }.label(),
+            SessionState::MicroBreak {
+                remaining_ms: 18_000
+            }
+            .label(),
             "Micro break"
         );
         assert_eq!(
-            SessionState::RestBreak { remaining_ms: 240_000 }.label(),
+            SessionState::RestBreak {
+                remaining_ms: 240_000
+            }
+            .label(),
             "Rest break"
         );
         assert_eq!(

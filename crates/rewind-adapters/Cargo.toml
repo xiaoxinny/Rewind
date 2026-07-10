@@ -3,22 +3,31 @@ name = "rewind-adapters"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "Real OS adapters for Rewind (idle, tray, notification, overlay, autostart)."
+description = "Real OS adapter implementations for Rewind (idle, overlay, etc.). No Tauri dependency."
 
 [lib]
 name = "rewind_adapters"
 path = "src/lib.rs"
 
+[features]
+default = ["x11-idle"]
+x11-idle = ["dep:user-idle"]
+
 [dependencies]
-# Only the seams rewind-core needs are visible; the actual concrete
-# adapter structs are added per-milestone.
 rewind-core = { path = "../rewind-core" }
-
-# Tauri v2 — needed by the M3 overlay adapter (M1 will share this for
-# the tray). We pull in the same workspace-managed version the shell
-# uses, with the minimum feature set we actually need (the
-# `Manager` / `WebviewWindow` / monitor APIs and `tauri::AppHandle`).
-tauri = { workspace = true }
-
-# Convenient error handling matching rewind-core's style.
+serde = { workspace = true }
+serde_json = { workspace = true }
 thiserror = { workspace = true }
+
+# Seconds-since-last-input on Win/macOS/X11. On Linux this is X11
+# (XScreenSaverQueryInfo); on Wayland we fall back to
+# `WaylandIdleSource` / `DegradedIdleSource` from the per-OS picker.
+# Pinned at 0.3 per the M2 spec; bumped if 0.3.x fails to build on
+# this toolchain (see `M2.md`).
+#
+# Gated behind the `x11-idle` feature so the host binary (rewind)
+# doesn't *also* have to link libX11.a into its Tauri dylib. Tauri
+# itself does not need user-idle; only the standalone rewind-adapters
+# library uses it. By default this is on; turn it off with
+# `--no-default-features` to skip the X11 link entirely.
+user-idle = { version = "0.3", optional = true }

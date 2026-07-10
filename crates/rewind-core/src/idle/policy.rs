@@ -50,7 +50,9 @@ pub fn evaluate(idle: Duration, state: &SessionState, config: &IdleConfig) -> Id
         // If the user is already paused, decide between resuming and
         // resetting based on whether they ever crossed the reset
         // threshold while away.
-        SessionState::Paused { reason: crate::session::state::PauseReason::Idle } => {
+        SessionState::Paused {
+            reason: crate::session::state::PauseReason::Idle,
+        } => {
             if idle >= reset {
                 // They've been away long enough that the absence
                 // counts as a natural break — reset the cycle.
@@ -68,9 +70,9 @@ pub fn evaluate(idle: Duration, state: &SessionState, config: &IdleConfig) -> Id
 
         // Paused{Manual} only returns to active via PauseToggle — the
         // idle policy never touches it.
-        SessionState::Paused { reason: crate::session::state::PauseReason::Manual } => {
-            IdleAction::None
-        }
+        SessionState::Paused {
+            reason: crate::session::state::PauseReason::Manual,
+        } => IdleAction::None,
 
         // During a micro/rest break — if the user idles for the full
         // break, the absence **satisfies** it (logged as `natural`).
@@ -141,19 +143,37 @@ mod tests {
     #[test]
     fn below_pause_threshold_no_action() {
         let state = SessionState::Focus;
-        assert_eq!(evaluate(Duration::from_secs(0), &state, &cfg()), IdleAction::None);
-        assert_eq!(evaluate(Duration::from_secs(89), &state, &cfg()), IdleAction::None);
+        assert_eq!(
+            evaluate(Duration::from_secs(0), &state, &cfg()),
+            IdleAction::None
+        );
+        assert_eq!(
+            evaluate(Duration::from_secs(89), &state, &cfg()),
+            IdleAction::None
+        );
         // Exactly at pause threshold counts as "exceeded" (>=).
-        assert_eq!(evaluate(Duration::from_secs(90), &state, &cfg()), IdleAction::Pause);
+        assert_eq!(
+            evaluate(Duration::from_secs(90), &state, &cfg()),
+            IdleAction::Pause
+        );
     }
 
     #[test]
     fn above_pause_below_reset_pauses() {
         let state = SessionState::Focus;
-        assert_eq!(evaluate(Duration::from_secs(91), &state, &cfg()), IdleAction::Pause);
-        assert_eq!(evaluate(Duration::from_secs(120), &state, &cfg()), IdleAction::Pause);
+        assert_eq!(
+            evaluate(Duration::from_secs(91), &state, &cfg()),
+            IdleAction::Pause
+        );
+        assert_eq!(
+            evaluate(Duration::from_secs(120), &state, &cfg()),
+            IdleAction::Pause
+        );
         // Still below reset — Pause holds.
-        assert_eq!(evaluate(Duration::from_secs(299), &state, &cfg()), IdleAction::Pause);
+        assert_eq!(
+            evaluate(Duration::from_secs(299), &state, &cfg()),
+            IdleAction::Pause
+        );
     }
 
     #[test]
@@ -162,42 +182,86 @@ mod tests {
         // `Pause`. The `Reset` verdict is only delivered while we're
         // already in Paused{Idle}.
         let state = SessionState::Focus;
-        assert_eq!(evaluate(Duration::from_secs(300), &state, &cfg()), IdleAction::Pause);
-        assert_eq!(evaluate(Duration::from_secs(900), &state, &cfg()), IdleAction::Pause);
+        assert_eq!(
+            evaluate(Duration::from_secs(300), &state, &cfg()),
+            IdleAction::Pause
+        );
+        assert_eq!(
+            evaluate(Duration::from_secs(900), &state, &cfg()),
+            IdleAction::Pause
+        );
     }
 
     #[test]
     fn paused_idle_below_resume_resumes() {
-        let state = SessionState::Paused { reason: PauseReason::Idle };
-        assert_eq!(evaluate(Duration::from_secs(0), &state, &cfg()), IdleAction::Resume);
-        assert_eq!(evaluate(Duration::from_secs(9), &state, &cfg()), IdleAction::Resume);
+        let state = SessionState::Paused {
+            reason: PauseReason::Idle,
+        };
+        assert_eq!(
+            evaluate(Duration::from_secs(0), &state, &cfg()),
+            IdleAction::Resume
+        );
+        assert_eq!(
+            evaluate(Duration::from_secs(9), &state, &cfg()),
+            IdleAction::Resume
+        );
         // 10s is the resume threshold — returning IdleAction::None
         // here means "stay paused".
-        assert_eq!(evaluate(Duration::from_secs(10), &state, &cfg()), IdleAction::None);
+        assert_eq!(
+            evaluate(Duration::from_secs(10), &state, &cfg()),
+            IdleAction::None
+        );
     }
 
     #[test]
     fn paused_idle_in_hysteresis_dead_band() {
         // Between `resume` (10s) and `reset` (300s) — stay paused.
         // Deliberately do nothing on these ticks.
-        let state = SessionState::Paused { reason: PauseReason::Idle };
-        assert_eq!(evaluate(Duration::from_secs(45), &state, &cfg()), IdleAction::None);
-        assert_eq!(evaluate(Duration::from_secs(120), &state, &cfg()), IdleAction::None);
-        assert_eq!(evaluate(Duration::from_secs(299), &state, &cfg()), IdleAction::None);
+        let state = SessionState::Paused {
+            reason: PauseReason::Idle,
+        };
+        assert_eq!(
+            evaluate(Duration::from_secs(45), &state, &cfg()),
+            IdleAction::None
+        );
+        assert_eq!(
+            evaluate(Duration::from_secs(120), &state, &cfg()),
+            IdleAction::None
+        );
+        assert_eq!(
+            evaluate(Duration::from_secs(299), &state, &cfg()),
+            IdleAction::None
+        );
     }
 
     #[test]
     fn paused_idle_at_reset_resets() {
-        let state = SessionState::Paused { reason: PauseReason::Idle };
-        assert_eq!(evaluate(Duration::from_secs(300), &state, &cfg()), IdleAction::Reset);
-        assert_eq!(evaluate(Duration::from_secs(1_000), &state, &cfg()), IdleAction::Reset);
+        let state = SessionState::Paused {
+            reason: PauseReason::Idle,
+        };
+        assert_eq!(
+            evaluate(Duration::from_secs(300), &state, &cfg()),
+            IdleAction::Reset
+        );
+        assert_eq!(
+            evaluate(Duration::from_secs(1_000), &state, &cfg()),
+            IdleAction::Reset
+        );
     }
 
     #[test]
     fn paused_manual_never_auto_resumes() {
-        let state = SessionState::Paused { reason: PauseReason::Manual };
-        assert_eq!(evaluate(Duration::from_secs(0), &state, &cfg()), IdleAction::None);
-        assert_eq!(evaluate(Duration::from_secs(900), &state, &cfg()), IdleAction::None);
+        let state = SessionState::Paused {
+            reason: PauseReason::Manual,
+        };
+        assert_eq!(
+            evaluate(Duration::from_secs(0), &state, &cfg()),
+            IdleAction::None
+        );
+        assert_eq!(
+            evaluate(Duration::from_secs(900), &state, &cfg()),
+            IdleAction::None
+        );
     }
 
     #[test]
@@ -205,10 +269,21 @@ mod tests {
         let state = SessionState::Focus;
         let mut c = cfg();
         c.enabled = false;
-        assert_eq!(evaluate(Duration::from_secs(900), &state, &c), IdleAction::None);
-        let state = SessionState::Paused { reason: PauseReason::Idle };
-        assert_eq!(evaluate(Duration::from_secs(900), &state, &c), IdleAction::None);
-        assert_eq!(evaluate(Duration::from_secs(0), &state, &c), IdleAction::None);
+        assert_eq!(
+            evaluate(Duration::from_secs(900), &state, &c),
+            IdleAction::None
+        );
+        let state = SessionState::Paused {
+            reason: PauseReason::Idle,
+        };
+        assert_eq!(
+            evaluate(Duration::from_secs(900), &state, &c),
+            IdleAction::None
+        );
+        assert_eq!(
+            evaluate(Duration::from_secs(0), &state, &c),
+            IdleAction::None
+        );
     }
 
     #[test]
@@ -216,17 +291,32 @@ mod tests {
         // During a break we already have an active countdown; we
         // don't pause on top of it. The engine handles natural-break
         // satisfaction separately.
-        let state = SessionState::MicroBreak { remaining_ms: 5_000 };
-        assert_eq!(evaluate(Duration::from_secs(500), &state, &cfg()), IdleAction::None);
-        let state = SessionState::RestBreak { remaining_ms: 60_000 };
-        assert_eq!(evaluate(Duration::from_secs(500), &state, &cfg()), IdleAction::None);
+        let state = SessionState::MicroBreak {
+            remaining_ms: 5_000,
+        };
+        assert_eq!(
+            evaluate(Duration::from_secs(500), &state, &cfg()),
+            IdleAction::None
+        );
+        let state = SessionState::RestBreak {
+            remaining_ms: 60_000,
+        };
+        assert_eq!(
+            evaluate(Duration::from_secs(500), &state, &cfg()),
+            IdleAction::None
+        );
     }
 
     #[test]
     fn natural_break_satisfied_micro() {
-        let state = SessionState::MicroBreak { remaining_ms: 1_000 };
+        let state = SessionState::MicroBreak {
+            remaining_ms: 1_000,
+        };
         // Idle less than micro duration — not satisfied.
-        assert_eq!(natural_break_satisfied(Duration::from_secs(15), &state, 20, 300), None);
+        assert_eq!(
+            natural_break_satisfied(Duration::from_secs(15), &state, 20, 300),
+            None
+        );
         // Exactly the duration — satisfied.
         assert_eq!(
             natural_break_satisfied(Duration::from_secs(20), &state, 20, 300),
@@ -241,7 +331,9 @@ mod tests {
 
     #[test]
     fn natural_break_satisfied_rest() {
-        let state = SessionState::RestBreak { remaining_ms: 1_000 };
+        let state = SessionState::RestBreak {
+            remaining_ms: 1_000,
+        };
         assert_eq!(
             natural_break_satisfied(Duration::from_secs(200), &state, 20, 300),
             None

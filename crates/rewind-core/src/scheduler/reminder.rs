@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::clock::Millis;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ReminderKind {
     EyeBreak,
@@ -12,17 +12,7 @@ pub enum ReminderKind {
     Posture,
 }
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    serde::Serialize,
-    serde::Deserialize,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum Priority {
     Low,
     Medium,

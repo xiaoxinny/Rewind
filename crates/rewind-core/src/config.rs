@@ -191,9 +191,7 @@ pub struct PostureConfig {
 
 impl Default for PostureConfig {
     fn default() -> Self {
-        Self {
-            interval_min: 40,
-        }
+        Self { interval_min: 40 }
     }
 }
 
@@ -280,6 +278,34 @@ impl AppConfig {
     /// the pre-break warning but **not** the break itself.
     pub fn eye_breaks_enabled(&self) -> bool {
         self.reminders.eye_breaks
+    }
+
+    /// Hydration waking window as local-clock minutes from midnight.
+    /// Parsing uses `time::Time` so invalid clock values do not leak
+    /// into scheduler math; malformed strings fall back to `09:00`.
+    pub fn waking_window_minutes(&self) -> (u32, u32) {
+        (
+            parse_hh_mm_minutes(&self.hydration.wake_start),
+            parse_hh_mm_minutes(&self.hydration.wake_end),
+        )
+    }
+
+    /// Quiet-hours window as local-clock minutes from midnight.
+    pub fn quiet_hours_minutes(&self) -> (u32, u32) {
+        (
+            parse_hh_mm_minutes(&self.quiet_hours.start),
+            parse_hh_mm_minutes(&self.quiet_hours.end),
+        )
+    }
+}
+
+fn parse_hh_mm_minutes(s: &str) -> u32 {
+    let mut parts = s.split(':');
+    let hour = parts.next().and_then(|h| h.parse::<u8>().ok()).unwrap_or(9);
+    let minute = parts.next().and_then(|m| m.parse::<u8>().ok()).unwrap_or(0);
+    match time::Time::from_hms(hour, minute, 0) {
+        Ok(t) => u32::from(t.hour()) * 60 + u32::from(t.minute()),
+        Err(_) => 9 * 60,
     }
 }
 
@@ -372,6 +398,39 @@ mod tests {
     }
 
     #[test]
+    fn waking_window_minutes_parses_hh_mm() {
+        let cfg = AppConfig::default();
+        assert_eq!(cfg.waking_window_minutes(), (9 * 60, 21 * 60));
+
+        let mut cfg = cfg;
+        cfg.hydration.wake_start = "07:30".to_string();
+        cfg.hydration.wake_end = "21:00".to_string();
+        assert_eq!(cfg.waking_window_minutes(), (7 * 60 + 30, 21 * 60));
+    }
+
+    #[test]
+    fn waking_window_minutes_allows_same_start_end_for_disabled_window() {
+        let mut cfg = AppConfig::default();
+        cfg.hydration.wake_start = "21:00".to_string();
+        cfg.hydration.wake_end = "21:00".to_string();
+        assert_eq!(cfg.waking_window_minutes(), (21 * 60, 21 * 60));
+    }
+
+    #[test]
+    fn waking_window_minutes_falls_back_for_invalid_values() {
+        let mut cfg = AppConfig::default();
+        cfg.hydration.wake_start = "not-a-time".to_string();
+        cfg.hydration.wake_end = "99:99".to_string();
+        assert_eq!(cfg.waking_window_minutes(), (9 * 60, 9 * 60));
+    }
+
+    #[test]
+    fn quiet_hours_minutes_parse_default_overnight_window() {
+        let cfg = AppConfig::default();
+        assert_eq!(cfg.quiet_hours_minutes(), (22 * 60, 8 * 60));
+    }
+
+    #[test]
     fn serde_roundtrip_matches_section_8b_json_shape() {
         // The store on disk mirrors this exact shape; the frontend
         // mirrors the same. Verifying a JSON roundtrip locks the
@@ -380,7 +439,10 @@ mod tests {
         let json = serde_json::to_string_pretty(&cfg).unwrap();
         // A handful of representative assertions against the
         // expected §8b shape.
-        assert!(json.contains("\"microIntervalMin\"") == false, "snake_case in core; frontend mirrors");
+        assert!(
+            json.contains("\"microIntervalMin\"") == false,
+            "snake_case in core; frontend mirrors"
+        );
         assert!(json.contains("\"micro_interval_min\""));
         assert!(json.contains("\"rest_interval_min\": 60"));
         assert!(json.contains("\"goal_ml\": 2000"));

@@ -383,8 +383,12 @@ mod tests {
                 kind: BreakKind::Micro,
                 remaining_ms: 9_000,
             }),
-            CoreEvent::StateChanged(SessionState::MicroBreak { remaining_ms: 18_000 }),
-            CoreEvent::StateChanged(SessionState::RestBreak { remaining_ms: 250_000 }),
+            CoreEvent::StateChanged(SessionState::MicroBreak {
+                remaining_ms: 18_000,
+            }),
+            CoreEvent::StateChanged(SessionState::RestBreak {
+                remaining_ms: 250_000,
+            }),
             CoreEvent::StateChanged(SessionState::Postponed {
                 kind: BreakKind::Rest,
                 until_ms: 123,

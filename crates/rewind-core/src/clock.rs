@@ -6,7 +6,7 @@
 //!
 //! See implementation plan §7a.
 
-use std::cell::RefCell;
+use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Monotonic milliseconds. Use for durations and timer arms; never goes
@@ -15,7 +15,9 @@ pub type Millis = u64;
 
 /// Wall-clock timestamp (Unix milliseconds since the epoch). Use for
 /// logging and local-day bucketing.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, serde::Serialize, serde::Deserialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, serde::Serialize, serde::Deserialize,
+)]
 pub struct Timestamp(pub i64);
 
 impl Timestamp {
@@ -27,7 +29,11 @@ impl Timestamp {
 /// Two methods on purpose — wall for logging/buckets, monotonic for
 /// durations. Implementations **must** return non-decreasing values from
 /// `monotonic` between successive calls on the same thread.
-pub trait Clock {
+///
+/// `Send + Sync` because the engine lives behind an `Arc<Mutex<…>>`
+/// in a tokio task spawned from Tauri's `setup` closure (which is
+/// `Send + 'static`).
+pub trait Clock: Send + Sync {
     /// Wall-clock time (UTC). Used for logging and local-day bucketing.
     fn now(&self) -> Timestamp;
     /// Monotonic time. Used for durations and timer arms.
@@ -58,29 +64,34 @@ impl Clock for RealClock {
 
 /// Test double: a manually-advanceable clock.
 ///
-/// Holds both clock readings in interior `RefCell`s so tests can hold
-/// `&self` while advancing. **Not `Send` / `Sync`** — single-threaded
-/// tests only.
+/// Holds both clock readings behind a `std::sync::Mutex` so the
+/// type is `Send + Sync` (required by the `Clock` trait, since the
+/// engine may live in a tokio task in production). In single-threaded
+/// tests the lock contention is essentially zero.
 #[derive(Debug, Default)]
 pub struct FakeClock {
-    wall: RefCell<i64>,
-    mono: RefCell<Millis>,
+    inner: Mutex<FakeClockInner>,
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+struct FakeClockInner {
+    wall: i64,
+    mono: Millis,
 }
 
 impl FakeClock {
     /// Start the fake clock at zero for both readings.
     pub fn new() -> Self {
-        Self {
-            wall: RefCell::new(0),
-            mono: RefCell::new(0),
-        }
+        Self::default()
     }
 
     /// Start the fake clock at the supplied readings.
     pub fn starting_at(wall_ms: i64, mono_ms: Millis) -> Self {
         Self {
-            wall: RefCell::new(wall_ms),
-            mono: RefCell::new(mono_ms),
+            inner: Mutex::new(FakeClockInner {
+                wall: wall_ms,
+                mono: mono_ms,
+            }),
         }
     }
 
@@ -88,36 +99,33 @@ impl FakeClock {
     ///
     /// Saturates at the type's max; never panics.
     pub fn advance(&self, by: Millis) {
-        if let Ok(mut mono) = self.mono.try_borrow_mut() {
-            *mono = mono.saturating_add(by);
-        }
-        if let Ok(mut wall) = self.wall.try_borrow_mut() {
-            // Convert `by: u64` to `i64` for the wall counter. If `by` is
-            // larger than `i64::MAX` we cap the addition at i64::MAX
-            // instead of silently wrapping to a negative timestamp.
-            let delta = by.min(i64::MAX as u64) as i64;
-            *wall = wall.saturating_add(delta);
-        }
+        let mut guard = self.inner.lock().expect("FakeClock poisoned");
+        // Convert `by: u64` to `i64` for the wall counter. If `by` is
+        // larger than `i64::MAX` we cap the addition at i64::MAX
+        // instead of silently wrapping to a negative timestamp.
+        let delta = by.min(i64::MAX as u64) as i64;
+        guard.mono = guard.mono.saturating_add(by);
+        guard.wall = guard.wall.saturating_add(delta);
     }
 
     /// Read the current wall-clock reading (for assertions).
     pub fn peek_wall(&self) -> i64 {
-        *self.wall.borrow()
+        self.inner.lock().expect("FakeClock poisoned").wall
     }
 
     /// Read the current monotonic reading (for assertions).
     pub fn peek_mono(&self) -> Millis {
-        *self.mono.borrow()
+        self.inner.lock().expect("FakeClock poisoned").mono
     }
 }
 
 impl Clock for FakeClock {
     fn now(&self) -> Timestamp {
-        Timestamp(*self.wall.borrow())
+        Timestamp(self.inner.lock().expect("FakeClock poisoned").wall)
     }
 
     fn monotonic(&self) -> Millis {
-        *self.mono.borrow()
+        self.inner.lock().expect("FakeClock poisoned").mono
     }
 }
 

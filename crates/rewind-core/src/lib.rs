@@ -27,18 +27,13 @@ pub use events::{
 };
 pub use idle::{IdleAction, IdleError, IdleReliability, IdleSource};
 pub use model::{
-    aggregate::DailyAggregate,
-    break_record::BreakOutcome as ModelBreakOutcome,
-    break_record::BreakRecord,
-    hydration::HydrationEntry,
-    hydration::HydrationSource,
-    session::SessionEndReason,
-    session::SessionRecord,
+    aggregate::DailyAggregate, break_record::BreakOutcome as ModelBreakOutcome,
+    break_record::BreakRecord, hydration::HydrationEntry, hydration::HydrationSource,
+    session::SessionEndReason, session::SessionRecord,
 };
 pub use scheduler::{
     reminder::{Priority, Reminder, ReminderKind},
-    ReminderCoordinator,
+    CoordinatorConfig, HydrationScheduler, HydrationSchedulerConfig, PostureScheduler,
+    PostureSchedulerConfig, ReminderCoordinator,
 };
-pub use session::{
-    BreakKind, PauseReason, SessionMachine, SessionState, Strictness,
-};
+pub use session::{BreakKind, PauseReason, SessionMachine, SessionState, Strictness};

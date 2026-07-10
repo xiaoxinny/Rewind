@@ -30,6 +30,8 @@ use rewind_core::{
 };
 use tauri::{AppHandle, Manager, PhysicalPosition, PhysicalSize, WebviewWindow};
 
+use crate::ipc::CoreEventDto;
+
 /// Tauri-backed overlay controller. Cheap to clone (it only holds an
 /// `AppHandle`, which is itself an `Arc`).
 #[derive(Clone)]
