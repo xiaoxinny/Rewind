@@ -1,0 +1,18 @@
+Internal documentation has been moved off this public repository.
+
+The historical docs (EVIDENCE_AUDIT_EYE.md, EVIDENCE_AUDIT_HYDRATION.md,
+ADVERSARIAL_UX_REPORT.md, DESIGN_LANGUAGE.md, REFERENCES.md, AUDIT_TRAIL.md,
+VERIFICATION.md, IMPLEMENTATION_PLAN.md, milestone docs M0-M6.md) were
+removed at the maintainer's request in v0.1.0.2 (commit that retains
+them was force-rewritten). They are kept in the maintainer's local
+working tree and any future contributor who needs access can request
+it via a GitHub issue on this repository.
+
+The audit work is preserved in the master's local repository under
+the same commit SHAs as the public release (the audit commits are
+referenced inline in the cited fixes inside the codebase).
+
+If you are reviewing Rewind's evidence base for the public v0.1.0
+release, see the README "More info" link and the in-app Settings →
+About panel — those surfaces paraphrase the source claims and link to
+canonical primary sources (Mayo Clinic, Cleveland Clinic, AOA, AAO).
