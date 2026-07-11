@@ -32,6 +32,11 @@
   } from "../lib/types";
 
   // Section visibility — collapsible groups (start open).
+  // About defaults to open (R6 from docs/ADVERSARIAL_UX_REPORT.md):
+  // the panel is the only verification surface for Rewind's
+  // evidence-honest framing, and most users — including clinicians
+  // auditing the citations — will not scroll past 9 collapsed
+  // sections to find it.
   let sectionsOpen = $state({
     breaks: true,
     strictness: true,
@@ -42,7 +47,7 @@
     quiet: false,
     system: false,
     data: true,
-    about: false,
+    about: true,
   });
 
   // Per-section update helpers — each writes through to the engine.
@@ -521,6 +526,29 @@
         Cleveland Clinic, Water Intoxication (reviewed September 2024).
       </p>
     </article>
+
+    <!-- "How we audit our citations" — surfaces the audit docs in
+         the repo so clinicians can verify Rewind's evidence chain
+         (G1 from docs/ADVERSARIAL_UX_REPORT.md). Plain <a> with
+         target="_blank" matches the existing link style in this
+         panel (the inline Mayo/Cleveland links do not use rel="noopener"
+         either; the new window opens to the canonical GitHub blob URL). -->
+    <p class="cite-audit">
+      <strong>How we audit our citations</strong> — every source on
+      this page has a corresponding audit doc in the repo:
+      <a
+        href="https://github.com/xiaoxinny/Rewind/blob/main/docs/EVIDENCE_AUDIT_EYE.md"
+        target="_blank"
+        >eye-strain claims</a
+      >
+      and
+      <a
+        href="https://github.com/xiaoxinny/Rewind/blob/main/docs/EVIDENCE_AUDIT_HYDRATION.md"
+        target="_blank"
+        >hydration claims</a
+      >. The audits list each source, what was checked, and what
+      changed.
+    </p>
   </details>
 </section>
 
@@ -657,6 +685,23 @@
     color: #8b949e;
     font-size: 0.8rem;
     font-style: italic;
+  }
+
+  .cite-audit {
+    margin: 0.75rem 0 0;
+    padding-top: 0.5rem;
+    border-top: 1px solid #30363d;
+    color: #c9d1d9;
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  .cite-audit a {
+    color: #58a6ff;
+  }
+
+  .cite-audit a:hover {
+    text-decoration: underline;
   }
   code {
     background: #0d1117;

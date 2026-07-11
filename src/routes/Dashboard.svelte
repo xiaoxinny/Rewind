@@ -19,12 +19,66 @@
       : 0,
   );
   const ratioPct = $derived(`${(ratio * 100).toFixed(0)}%`);
+
+  // Phase label for the hero countdown. Reads `state.state` so the
+  // label always matches what the engine is doing, instead of
+  // rendering a bare `m:ss` and forcing the user to guess what it
+  // counts to (R3 from docs/ADVERSARIAL_UX_REPORT.md).
+  const phaseLabel = $derived.by((): string => {
+    switch (state.state.type) {
+      case "focus":
+        // While in focus, the engine's *next* event is the upcoming
+        // micro break (the 20-20-20 rule) — that's what the
+        // countdown is actually counting to.
+        return "Next micro break in";
+      case "pre_break":
+        return state.state.kind === "rest"
+          ? "Rest break starts in"
+          : "Micro break starts in";
+      case "micro_break":
+        return "Look away for";
+      case "rest_break":
+        return "Rest for";
+      case "postponed":
+        return "Break postponed — back in";
+      case "paused":
+        return "Paused — next break in";
+    }
+  });
+
+  // Countdown text rendered as the hero. We use `state.remainingMs`
+  // (driven by CoreEvent::Tick) instead of `state.trayStatus.tooltip_line`
+  // so the value is stable while the engine is still bootstrapping
+  // and the tooltip line is the literal "Loading…".
+  function formatMs(ms: number): string {
+    const total = Math.max(0, Math.round(ms / 1_000));
+    const m = Math.floor(total / 60);
+    const s = total % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }
+  const countdownText = $derived(formatMs(state.remainingMs));
+
+  // Has the engine pushed its first Tick event yet? The initial
+  // tooltip line is literally "Loading…" (stores.svelte.ts:91) and
+  // is overwritten with `formatRemaining(...)` on every tick
+  // (stores.svelte.ts:130). Until that first tick lands, we show a
+  // small "calculating…" caption in place of the bare "Loading…".
+  const bootstrapping = $derived(
+    state.trayStatus.tooltip_line === "Loading…",
+  );
 </script>
 
 <section class="dashboard">
   <article class="hero">
     <h2>Today</h2>
-    <p class="hero-line">{state.trayStatus.tooltip_line}</p>
+    <p class="hero-label">{phaseLabel}</p>
+    {#if bootstrapping}
+      <p class="hero-line placeholder" aria-live="polite">
+        <span class="calculating">calculating…</span>
+      </p>
+    {:else}
+      <p class="hero-line">{countdownText}</p>
+    {/if}
     <p class="hero-sub">
       {ratioPct} of water goal · {state.today.breaks_taken} breaks taken ·
       {state.today.posture_prompts} posture nudges
@@ -105,10 +159,34 @@
     letter-spacing: 0.04em;
   }
 
+  .hero-label {
+    margin: 0.5rem 0 0.25rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #c9d1d9;
+    letter-spacing: 0.01em;
+  }
+
   .hero-line {
     margin: 0 0 0.5rem;
-    font-size: 1.6rem;
-    font-weight: 600;
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hero-line.placeholder {
+    margin: 0 0 0.5rem;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: baseline;
+  }
+
+  .hero-line .calculating {
+    font-size: 0.95rem;
+    font-weight: 400;
+    font-style: italic;
+    color: #8b949e;
   }
 
   .hero-sub {

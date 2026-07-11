@@ -16,6 +16,19 @@
   let dailyBuckets: DailyAggregate[] = $state([]);
   let hydrationByDay: { day: string; ml: number }[] = $state([]);
 
+  // Local-day key. Plan §7f requires aggregates key on the **local**
+  // day; the engine and storage layer use `time::OffsetDateTime` for
+  // DST safety. Frontend `new Date(ms).toISOString().slice(0,10)`
+  // produces the UTC date — silently wrong for any user whose
+  // workday straddles UTC midnight (R5 from
+  // docs/ADVERSARIAL_UX_REPORT.md).
+  function localDayKey(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
   onMount(async () => {
     await refreshRecent(DAYS);
     // Build the per-day bar from the recent sessions + hydration.
@@ -32,7 +45,7 @@
     const byDay = new Map<string, DailyAggregate>();
     for (const s of sessions) {
       const day = new Date(s.started_at.unixMs);
-      const key = day.toISOString().slice(0, 10);
+      const key = localDayKey(day);
       const cur =
         byDay.get(key) ??
         ({
@@ -52,7 +65,7 @@
     const dayMs = 24 * 60 * 60 * 1000;
     for (let i = DAYS - 1; i >= 0; i--) {
       const d = new Date(Date.now() - i * dayMs);
-      const key = d.toISOString().slice(0, 10);
+      const key = localDayKey(d);
       out.push(byDay.get(key) ?? todayForDay(key, today));
     }
     return out;
@@ -72,14 +85,14 @@
     const byDay = new Map<string, number>();
     for (const h of entries) {
       const d = new Date(h.logged_at.unixMs);
-      const key = d.toISOString().slice(0, 10);
+      const key = localDayKey(d);
       byDay.set(key, (byDay.get(key) ?? 0) + h.amount_ml);
     }
     const dayMs = 24 * 60 * 60 * 1000;
     const out: { day: string; ml: number }[] = [];
     for (let i = DAYS - 1; i >= 0; i--) {
       const d = new Date(Date.now() - i * dayMs);
-      const key = d.toISOString().slice(0, 10);
+      const key = localDayKey(d);
       out.push({ day: key, ml: byDay.get(key) ?? 0 });
     }
     return out;
