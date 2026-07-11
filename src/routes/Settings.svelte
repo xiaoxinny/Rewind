@@ -19,6 +19,7 @@
   } from "../lib/stores.svelte";
   import { state as mirror } from "../lib/stores.svelte";
   import { setAutostart } from "../lib/ipc";
+  import { restart as restartOnboarding } from "../lib/onboarding.svelte";
   import type {
     AppConfig,
     BreakConfig,
@@ -126,6 +127,15 @@
     } catch (e) {
       exportStatus = `Autostart change failed: ${e}`;
     }
+  }
+
+  /** Restart-tour handler. Dispatches a DOM event App.svelte
+   *  listens for (see `src/App.svelte`); the App switches `route`
+   *  to `"welcome"`. We don't have access to `route` directly
+   *  because it lives in App.svelte. */
+  function onRestartTour(): void {
+    void restartOnboarding();
+    window.dispatchEvent(new CustomEvent("rewind:start-tour"));
   }
 </script>
 
@@ -549,6 +559,19 @@
       >. The audits list each source, what was checked, and what
       changed.
     </p>
+
+    <!-- Track 2 onboarding restart entry point. The user can always
+         re-walk the wizard from here regardless of `first_run_complete`.
+         Dispatches a DOM event App.svelte listens for. -->
+    <p class="restart-tour-row">
+      <button type="button" class="restart-tour" onclick={onRestartTour}>
+        Restart tour
+      </button>
+      <span class="restart-tour-hint">
+        Step through welcome, evidence, intervals, and the tray
+        explainer again.
+      </span>
+    </p>
   </details>
 </section>
 
@@ -720,6 +743,47 @@
 
   .cite-audit a:hover {
     text-decoration: underline;
+  }
+
+  /* Track 2 — restart-tour row inside the About panel. The button
+     is a small secondary control (§6.3 variant="secondary"); the
+     hint copy mirrors Settings voice (terse, present tense). */
+  .restart-tour-row {
+    margin: 0.5rem 0 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+  }
+
+  .restart-tour {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--hairline);
+    color: var(--text-2);
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius-input);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.875rem;
+    transition: border-color var(--dur-small) var(--ease),
+      color var(--dur-small) var(--ease);
+  }
+
+  .restart-tour:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  .restart-tour:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  .restart-tour-hint {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.4;
   }
   code {
     background: var(--ink);
