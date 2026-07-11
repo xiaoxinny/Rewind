@@ -98,10 +98,6 @@ src/                # Svelte 5 + TypeScript UI; no business logic
 
 The core is testable end-to-end with `FakeClock` + `FakeIdleSource` (see `crates/rewind-core/src/testing/`); unit tests cover the FSM, the idle pause/reset policy, the reminder coordinator, hydration interval/goal logic, and storage round-trips. Adapter behavior is verified manually per-OS.
 
-## More info
-
-The bibliographic details behind the in-app About panel — and any reader wanting the full audit / design / verification trail — are in `docs/REFERENCES.md` and the docs it links to.
-
 ## License
 
 AGPL-3.0. See `LICENSE`. A note on the metadata: `Cargo.toml` and `package.json` still report `license = "MIT"` because those fields were never updated when the project moved to AGPL-3.0. The `LICENSE` file is the source of truth; the metadata fields will be reconciled in a later release.

@@ -3,21 +3,17 @@
  * -----------------------------------------------------------------------------
  * Rewind design language — single source of truth for tokens.
  *
- * This file is a verbatim copy of Appendix A from
- *   docs/DESIGN_LANGUAGE.md
- * Imported once from src/main.ts (which also boots the overlay's Vite entry)
- * so :root cascades to every component.
- *
  * Component <style> blocks MUST use var(--token) and MUST NOT introduce
  * hex literals. The only carveout is SVG fill / stroke attributes inline
- * inside src/overlay/exercises/*.svelte (see DESIGN_LANGUAGE.md §2.7).
+ * inside src/overlay/exercises/*.svelte.
  *
- * Font woff2 files are NOT bundled in this commit (see §3.1). The
- * --font-* declarations reference the family names with system-stack
- * fallbacks; when the bundled-fonts PR lands, only the resolved family
- * changes — the token names stay.
+ * Font woff2 files are NOT bundled in this commit. The --font-*
+ * declarations reference the family names with system-stack fallbacks;
+ * when the bundled-fonts PR lands, only the resolved family changes —
+ * the token names stay.
  *
- * Last revised: see docs/DESIGN_LANGUAGE.md §11 / Appendix A.
+ * When revising this file, update every component that consumes the
+ * changed tokens — there is no separate spec to consult.
  * ========================================================================== */
 
 :root {

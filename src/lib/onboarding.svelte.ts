@@ -1,7 +1,6 @@
 // Track 2 — onboarding flow's state machine + tauri-plugin-store
 // persistence.
 //
-// File: docs/DESIGN_LANGUAGE.md §10.6 (preview) and the Track 2 brief.
 // Persistence model: two keys in `app_state.json` (a separate JSON
 // store file from the AppConfig store at `config.json`):
 //

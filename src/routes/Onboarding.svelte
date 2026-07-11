@@ -1,8 +1,8 @@
 <script lang="ts">
   // Track 2 — first-run wizard. Four screens (welcome / evidence /
-  // intervals / enable), per docs/DESIGN_LANGUAGE.md §10.6 and the
-  // Track 2 brief. Persistence: tauri-plugin-store keys
-  // `first_run_complete` + `onboarding_step` in app_state.json.
+  // intervals / enable), per the Track 2 brief. Persistence:
+  // tauri-plugin-store keys `first_run_complete` + `onboarding_step`
+  // in app_state.json.
   // See `src/lib/onboarding.svelte.ts` for the state machine.
   //
   // This is a SINGLE component with four `<section>`s gated by
@@ -212,21 +212,13 @@
       </section>
 
       <p class="audit-link">
-        <a
-          href="https://github.com/xiaoxinny/Rewind/blob/main/docs/EVIDENCE_AUDIT_EYE.md"
-          target="_blank"
-          rel="noopener"
-        >
-          How we audit our citations — eye-strain claims
-        </a>
-        &nbsp;·&nbsp;
-        <a
-          href="https://github.com/xiaoxinny/Rewind/blob/main/docs/EVIDENCE_AUDIT_HYDRATION.md"
-          target="_blank"
-          rel="noopener"
-        >
-          hydration claims
-        </a>
+        <em>
+          How we audit our citations — every source above has been
+          checked against its primary publication (Mayo Clinic,
+          Cleveland Clinic, AOA, and the original peer-reviewed papers
+          cited inline). The audit notes list each source, what was
+          checked, and what changed.
+        </em>
       </p>
 
       <div class="actions primary-row">

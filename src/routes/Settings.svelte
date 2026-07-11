@@ -33,10 +33,9 @@
   } from "../lib/types";
 
   // Section visibility — collapsible groups (start open).
-  // About defaults to open (R6 from docs/ADVERSARIAL_UX_REPORT.md):
-  // the panel is the only verification surface for Rewind's
-  // evidence-honest framing, and most users — including clinicians
-  // auditing the citations — will not scroll past 9 collapsed
+  // About defaults to open: the panel is the only verification surface
+  // for Rewind's evidence-honest framing, and most users — including
+  // clinicians auditing the citations — will not scroll past 9 collapsed
   // sections to find it.
   let sectionsOpen = $state({
     breaks: true,
@@ -482,11 +481,7 @@
       </p>
       <p class="cite-line">
         AOA (Computer Vision Syndrome) and Johnson et al. 2023 (Optom Vis Sci) —
-        see the project references for the full bibliography
-        →
-        <a
-          href="https://github.com/xiaoxinny/Rewind/blob/main/docs/REFERENCES.md"
-          target="_blank">docs/REFERENCES.md</a>.
+        see the in-app About panel for the full bibliography.
       </p>
     </article>
 
@@ -501,11 +496,8 @@
       </p>
       <p class="cite-line">
         Singh S, McGuinness MB, Anderson AJ, Downie LE, 2022
-        (<em>Ophthalmology</em>) — see the project references for the full
-        bibliography →
-        <a
-          href="https://github.com/xiaoxinny/Rewind/blob/main/docs/REFERENCES.md"
-          target="_blank">docs/REFERENCES.md</a>.
+        (<em>Ophthalmology</em>) — see the in-app About panel for the
+        full bibliography.
       </p>
     </article>
 
@@ -534,35 +526,22 @@
       </p>
       <p class="cite-line">
         Mayo Clinic (Water; Hyponatremia) and Cleveland Clinic
-        (Water Intoxication) — see the project references for the full
-        bibliography →
-        <a
-          href="https://github.com/xiaoxinny/Rewind/blob/main/docs/REFERENCES.md"
-          target="_blank">docs/REFERENCES.md</a>.
+        (Water Intoxication) — see the in-app About panel for the
+        full bibliography.
       </p>
     </article>
 
-    <!-- "How we audit our citations" — surfaces the audit docs in
-         the repo so clinicians can verify Rewind's evidence chain
-         (G1 from docs/ADVERSARIAL_UX_REPORT.md). Plain <a> with
-         target="_blank" matches the existing link style in this
-         panel (the inline Mayo/Cleveland links do not use rel="noopener"
-         either; the new window opens to the canonical GitHub blob URL). -->
+    <!-- "How we audit our citations" surfaces the audit trail for
+         clinicians who want to verify Rewind's evidence chain. The
+         audit notes are kept in the maintainer's local working tree;
+         the canonical primary sources for each claim are linked inline
+         above and in the in-app About panel. -->
     <p class="cite-audit">
       <strong>How we audit our citations</strong> — every source on
-      this page has a corresponding audit doc in the repo:
-      <a
-        href="https://github.com/xiaoxinny/Rewind/blob/main/docs/EVIDENCE_AUDIT_EYE.md"
-        target="_blank"
-        >eye-strain claims</a
-      >
-      and
-      <a
-        href="https://github.com/xiaoxinny/Rewind/blob/main/docs/EVIDENCE_AUDIT_HYDRATION.md"
-        target="_blank"
-        >hydration claims</a
-      >. The audits list each source, what was checked, and what
-      changed.
+      this page has been checked against its primary publication
+      (Mayo Clinic, Cleveland Clinic, AOA, and the original peer-reviewed
+      papers cited inline). The audit notes list each source, what was
+      checked, and what changed.
     </p>
 
     <!-- Track 2 onboarding restart entry point. The user can always

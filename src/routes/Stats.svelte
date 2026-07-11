@@ -20,8 +20,7 @@
   // day; the engine and storage layer use `time::OffsetDateTime` for
   // DST safety. Frontend `new Date(ms).toISOString().slice(0,10)`
   // produces the UTC date — silently wrong for any user whose
-  // workday straddles UTC midnight (R5 from
-  // docs/ADVERSARIAL_UX_REPORT.md).
+  // workday straddles UTC midnight.
   function localDayKey(d: Date): string {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -145,7 +144,7 @@
       <li>{mirror.today.posture_prompts} posture nudges</li>
     </ul>
     <p class="dim">
-      Rich charts and streaks are post-v1 — see docs/M6.md.
+      Rich charts and streaks are post-v1.
     </p>
   </article>
 </section>

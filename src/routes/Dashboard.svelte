@@ -23,7 +23,7 @@
   // Phase label for the hero countdown. Reads `state.state` so the
   // label always matches what the engine is doing, instead of
   // rendering a bare `m:ss` and forcing the user to guess what it
-  // counts to (R3 from docs/ADVERSARIAL_UX_REPORT.md).
+  // counts to.
   const phaseLabel = $derived.by((): string => {
     switch (state.state.type) {
       case "focus":
