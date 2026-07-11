@@ -1,3 +1,8 @@
+// Design tokens — single source of truth (see docs/DESIGN_LANGUAGE.md
+// Appendix A). Imported first so :root tokens are available to every
+// component's <style> block on first paint.
+import "./lib/tokens.css";
+
 import App from "./App.svelte";
 import { mount } from "svelte";
 

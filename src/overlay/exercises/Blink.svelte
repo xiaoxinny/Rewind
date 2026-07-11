@@ -52,33 +52,37 @@
     place-items: center;
     text-align: center;
     padding: 2rem;
-    color: #e6edf3;
+    color: var(--text);
+    font-family: var(--font-body);
   }
   h2 {
     margin: 0 0 0.5rem;
+    font-family: var(--font-display);
   }
   .muted {
-    color: #8b949e;
+    color: var(--text-muted);
     margin: 0 0 1rem;
   }
+  /* CSS-only; .eye / .pupil / .bar-fill swap to the micro-break hue
+     family per §10.5. */
   .eye {
     width: 220px;
     height: 110px;
-    border: 4px solid #58a6ff;
+    border: 4px solid var(--micro-break);
     border-radius: 50%;
     display: grid;
     place-items: center;
     position: relative;
-    background: #0d1117;
+    background: var(--ink);
     overflow: hidden;
   }
   .lid {
     position: absolute;
     inset: 0;
-    background: #0e1116;
+    background: var(--ink-2);
     transform-origin: center;
     transform: scaleY(0);
-    transition: transform 120ms ease-in-out;
+    transition: transform 120ms var(--ease);
   }
   .eye.blinking .lid {
     transform: scaleY(0.95);
@@ -87,7 +91,7 @@
   .pupil {
     width: 24px;
     height: 24px;
-    background: #58a6ff;
+    background: var(--micro-break);
     border-radius: 50%;
     z-index: 1;
   }
@@ -95,13 +99,13 @@
     margin-top: 1.25rem;
     width: 220px;
     height: 4px;
-    background: #21262d;
+    background: var(--ink-3);
     border-radius: 999px;
     overflow: hidden;
   }
   .bar-fill {
     height: 100%;
-    background: #58a6ff;
+    background: var(--micro-break);
     transition: width 100ms linear;
   }
 </style>

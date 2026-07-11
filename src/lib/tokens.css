@@ -1,0 +1,104 @@
+/* =============================================================================
+ * src/lib/tokens.css
+ * -----------------------------------------------------------------------------
+ * Rewind design language — single source of truth for tokens.
+ *
+ * This file is a verbatim copy of Appendix A from
+ *   docs/DESIGN_LANGUAGE.md
+ * Imported once from src/main.ts (which also boots the overlay's Vite entry)
+ * so :root cascades to every component.
+ *
+ * Component <style> blocks MUST use var(--token) and MUST NOT introduce
+ * hex literals. The only carveout is SVG fill / stroke attributes inline
+ * inside src/overlay/exercises/*.svelte (see DESIGN_LANGUAGE.md §2.7).
+ *
+ * Font woff2 files are NOT bundled in this commit (see §3.1). The
+ * --font-* declarations reference the family names with system-stack
+ * fallbacks; when the bundled-fonts PR lands, only the resolved family
+ * changes — the token names stay.
+ *
+ * Last revised: see docs/DESIGN_LANGUAGE.md §11 / Appendix A.
+ * ========================================================================== */
+
+:root {
+  /* Base */
+  --ink:       #0d1117;
+  --ink-2:     #161b22;
+  --ink-3:     #21262d;
+  --ink-4:     #484f58;
+  --hairline:  #30363d;
+
+  /* Text */
+  --text:        #e6edf3;
+  --text-2:      #c9d1d9;
+  --text-muted:  #8b949e;
+  --text-faint:  #6e7681;
+
+  /* Accent (dusk teal; see DESIGN_LANGUAGE.md §2.3) */
+  --accent:      #5fb4a8;
+  --accent-hi:   #7ecabc;
+  --accent-ink:  #0d1117;
+  --accent-soft: rgba(95, 180, 168, 0.12);
+
+  /* State */
+  --ok:          #3fb950;
+  --warn:        #d29922;
+  --danger:      #f85149;
+  --danger-soft: rgba(248, 81, 73, 0.15);
+
+  /* Function (semantic alias for countdown ring per §2.5) */
+  --focus-mode:  var(--accent);
+  --micro-break: #58a6ff;
+  --rest-break:  var(--accent-hi);
+  --paused:      var(--text-muted);
+
+  /* Backdrop dimming (overlay; §2.7) */
+  --backdrop:        rgba(0, 0, 0, 0.85);
+  --backdrop-strict: rgba(0, 0, 0, 0.95);
+
+  /* Shadows (hard offset, never blurred; §4.3) */
+  --shadow-hero: 6px 6px 0 0 var(--ink);
+
+  /* Spacing (§4.1) */
+  --space-0: 0;
+  --space-half: 4px;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+
+  /* Radii (§4.3) */
+  --radius-input: 4px;
+  --radius-card:  8px;
+  --radius-hero:  12px;
+
+  /* Motion (§5.2) */
+  --dur-micro:  50ms;
+  --dur-small:  150ms;
+  --dur-medium: 250ms;
+  --dur-large:  400ms;
+  --ease:       cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Type (font stacks; §3.1 — woff2 bundling deferred) */
+  --font-display: "Fraunces", "Iowan Old Style", Charter, "Source Serif Pro", Georgia, serif;
+  --font-body:    "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:    "JetBrains Mono", "SF Mono", ui-monospace, Consolas, monospace;
+
+  /* Focus ring (§9.2) */
+  --focus-ring: 0 0 0 2px var(--accent);
+}
+
+/* -----------------------------------------------------------------------------
+ * Reduced-motion: hard-code the duration scale to 0ms (§5.3).
+ * The countdown ring itself still ticks — only its CSS transition is dropped.
+ * --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-micro:  0ms;
+    --dur-small:  0ms;
+    --dur-medium: 0ms;
+    --dur-large:  0ms;
+  }
+}

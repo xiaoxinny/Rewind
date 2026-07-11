@@ -145,26 +145,27 @@
   }
 
   .hero {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 12px;
+    background: var(--ink-2);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-hero);
     padding: 1.25rem 1.5rem;
+    box-shadow: var(--shadow-hero);
   }
 
   .hero h2 {
     margin: 0 0 0.25rem;
     font-size: 1.1rem;
-    color: #8b949e;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    color: var(--text);
+    font-family: var(--font-display);
+    /* DESIGN_LANGUAGE.md §10.1 drops the ALL-CAPS transform — "Today"
+       stays sentence case. The `<h3>` tiles are already not uppercase. */
   }
 
   .hero-label {
     margin: 0.5rem 0 0.25rem;
     font-size: 1rem;
     font-weight: 500;
-    color: #c9d1d9;
-    letter-spacing: 0.01em;
+    color: var(--text);
   }
 
   .hero-line {
@@ -173,6 +174,7 @@
     font-weight: 700;
     line-height: 1.1;
     font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono);
   }
 
   .hero-line.placeholder {
@@ -186,23 +188,29 @@
     font-size: 0.95rem;
     font-weight: 400;
     font-style: italic;
-    color: #8b949e;
+    color: var(--text-muted);
   }
 
   .hero-sub {
     margin: 0;
-    color: #8b949e;
+    color: var(--text-muted);
     font-size: 0.9rem;
   }
 
+  /* Paused banner (DESIGN_LANGUAGE.md §6.7 — `<Banner variant="paused">`).
+     In v0.1 the Banner component is not yet extracted (Track 3 PR 3);
+     the inline shape here matches the language spec: --ink-3 surface,
+     --text-muted left-border, --text-2 copy. The ⏸ emoji is removed
+     in PR 3; v0.1.1 ships the icon-replace. */
   .paused-banner {
     margin: 0.75rem 0 0;
-    background: #21262d;
-    border: 1px solid #f85149;
-    border-radius: 6px;
+    background: var(--ink-3);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--text-muted);
+    border-radius: var(--radius-card);
     padding: 0.5rem 0.75rem;
     font-size: 0.9rem;
-    color: #ffa198;
+    color: var(--text-2);
   }
 
   .quick-actions {
@@ -213,20 +221,27 @@
 
   .quick-actions button {
     appearance: none;
-    background: #21262d;
-    border: 1px solid #30363d;
-    border-radius: 6px;
+    background: var(--ink-3);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
     padding: 0.5rem 0.875rem;
     cursor: pointer;
+    color: var(--text-2);
+    transition: border-color var(--dur-small) var(--ease),
+      background var(--dur-small) var(--ease);
   }
 
   .quick-actions button.primary {
-    background: #238636;
-    border-color: #2ea043;
+    /* Per §6.3: one primary button per screen. Pause / Resume swaps
+       into the primary slot; the label and aria follow. */
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 600;
   }
 
   .quick-actions button:hover {
-    border-color: #58a6ff;
+    border-color: var(--accent);
   }
 
   .grid {
@@ -236,60 +251,63 @@
   }
 
   article {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 8px;
+    background: var(--ink-2);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
     padding: 0.875rem 1rem;
   }
 
   article h3 {
     margin: 0 0 0.5rem;
     font-size: 0.95rem;
-    color: #8b949e;
+    color: var(--text-muted);
+    font-family: var(--font-body);
   }
 
   .big {
     margin: 0;
     font-size: 1.4rem;
     font-weight: 600;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
   }
 
   .dim {
-    color: #8b949e;
+    color: var(--text-muted);
     font-size: 0.85rem;
   }
 
   .bar {
     height: 6px;
     margin-top: 0.5rem;
-    background: #21262d;
+    background: var(--ink-3);
     border-radius: 999px;
     overflow: hidden;
   }
 
   .bar-fill {
     height: 100%;
-    background: #1f6feb;
-    transition: width 200ms ease-in-out;
+    background: var(--accent);
+    transition: width var(--dur-small) var(--ease);
   }
 
   .next {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 8px;
+    background: var(--ink-2);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
     padding: 0.875rem 1rem;
   }
 
   .next h3 {
     margin: 0 0 0.25rem;
     font-size: 0.95rem;
-    color: #8b949e;
+    color: var(--text-muted);
   }
 
   .muted {
     margin: 0;
-    color: #8b949e;
-    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
     font-size: 0.95rem;
   }
 </style>

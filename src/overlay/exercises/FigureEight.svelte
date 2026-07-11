@@ -67,20 +67,25 @@
     place-items: center;
     text-align: center;
     padding: 2rem;
-    color: #e6edf3;
+    color: var(--text);
+    font-family: var(--font-body);
   }
   h2 {
     margin: 0 0 0.5rem;
+    font-family: var(--font-display);
   }
   .muted {
-    color: #8b949e;
+    color: var(--text-muted);
     margin: 0 0 1rem;
   }
+  /* The big SVG has both its dot (carveout: fill on <circle>) and the
+     crosshair lines (carveout: stroke on <line>). The surrounding
+     card shape uses tokens. */
   svg {
     width: 280px;
     height: 280px;
-    background: #0d1117;
+    background: var(--ink);
     border-radius: 50%;
-    border: 1px solid #30363d;
+    border: 1px solid var(--hairline);
   }
 </style>

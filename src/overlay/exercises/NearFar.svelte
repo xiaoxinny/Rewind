@@ -46,38 +46,47 @@
     place-items: center;
     text-align: center;
     padding: 2rem;
-    color: #e6edf3;
+    color: var(--text);
+    font-family: var(--font-body);
   }
   h2 {
     margin: 0 0 0.5rem;
+    font-family: var(--font-display);
   }
   .muted {
-    color: #8b949e;
+    color: var(--text-muted);
     margin: 0 0 1rem;
   }
   .target {
+    /* The blue background uses --micro-break (the "look at this"
+       hue family per §10.5). The dot fill below is the exercise's
+       inline SVG carveout. */
     width: 48px;
     height: 48px;
     border-radius: 12px;
-    background: rgba(88, 166, 255, 0.15);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
     display: grid;
     place-items: center;
-    transition: width 800ms ease-in-out, height 800ms ease-in-out;
+    transition: width 800ms var(--ease), height 800ms var(--ease);
   }
   .target.far {
     width: 240px;
     height: 240px;
     border-radius: 50%;
   }
+  /* .dot is a CSS-only div (no inline SVG in NearFar), so this
+     uses --micro-break per §10.5: "the animated rings / dots
+     currently use #58a6ff directly. Switch to var(--micro-break)". */
   .dot {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #58a6ff;
+    background: var(--micro-break);
   }
   .caption {
     margin: 1rem 0 0;
-    color: #8b949e;
-    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
   }
 </style>

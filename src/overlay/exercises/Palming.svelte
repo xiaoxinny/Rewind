@@ -43,22 +43,27 @@
     place-items: center;
     text-align: center;
     padding: 2rem;
-    color: #e6edf3;
+    color: var(--text);
+    font-family: var(--font-body);
   }
   h2 {
     margin: 0 0 0.5rem;
+    font-family: var(--font-display);
   }
+  /* Per Appendix A / §2.7: SVG fill attributes inside an exercise
+     component are an explicit carveout — the design language document
+     notes these remain inline hex literals. */
   svg {
     width: 200px;
     height: 200px;
   }
   .muted {
-    color: #8b949e;
+    color: var(--text-muted);
     margin: 0 0 1rem;
   }
   .caption {
     margin: 0.75rem 0 0;
-    color: #8b949e;
-    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
   }
 </style>

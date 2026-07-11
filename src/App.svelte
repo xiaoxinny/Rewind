@@ -82,9 +82,9 @@
 <style>
   :global(body) {
     margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: #0e1116;
-    color: #e6edf3;
+    font-family: var(--font-body);
+    background: var(--ink);
+    color: var(--text);
   }
 
   :global(button) {
@@ -102,11 +102,12 @@
     margin: 0 0 0.25rem;
     font-size: 2rem;
     letter-spacing: -0.02em;
+    font-family: var(--font-display);
   }
 
   .tagline {
     margin: 0 0 1rem;
-    color: #8b949e;
+    color: var(--text-muted);
     font-style: italic;
   }
 
@@ -114,29 +115,37 @@
     display: flex;
     gap: 0.25rem;
     margin: 0 0 1.5rem;
-    border-bottom: 1px solid #30363d;
+    border-bottom: 1px solid var(--hairline);
   }
 
   .tabs button {
     appearance: none;
     background: transparent;
     border: none;
-    color: #8b949e;
+    color: var(--text-muted);
     padding: 0.5rem 0.875rem;
     border-bottom: 2px solid transparent;
     cursor: pointer;
+    transition: color var(--dur-small) var(--ease),
+      border-bottom-color var(--dur-small) var(--ease);
   }
 
   .tabs button:hover {
-    color: #e6edf3;
+    color: var(--text);
   }
 
   .tabs button.active {
-    color: #e6edf3;
-    border-bottom-color: #58a6ff;
+    color: var(--text);
+    border-bottom-color: var(--accent);
   }
 
   .route-host {
     display: block;
+  }
+
+  /* Visible focus ring (DESIGN_LANGUAGE.md §9.2); keyboard-only. */
+  :global(:focus-visible) {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
   }
 </style>

@@ -434,9 +434,9 @@
 <style>
   :global(body) {
     margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-family: var(--font-body);
     background: transparent;
-    color: #e6edf3;
+    color: var(--text);
   }
 
   .backdrop {
@@ -448,25 +448,30 @@
   }
 
   .backdrop.gentle {
-    background: rgba(0, 0, 0, 0.85);
+    background: var(--backdrop);
   }
 
   .backdrop.strict {
-    background: rgba(0, 0, 0, 0.95);
+    background: var(--backdrop-strict);
   }
 
+  /* §10.4 card surface: solid --ink-2 (not rgba — the transparency
+     clashes with the backdrop), 12px radius, hard offset shadow
+     (no blur). The single blur shadow from the previous overlay
+     is removed per §1 + §11.3. */
   .card {
     position: relative;
-    background: rgba(14, 17, 22, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    background: var(--ink-2);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-hero);
     padding: 1.75rem 2rem 1.5rem;
     max-width: 520px;
     width: min(92vw, 520px);
     text-align: center;
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+    box-shadow: var(--shadow-hero);
   }
 
+  /* §10.4 strict badge: --danger-soft bg, --danger text, 4px radius. */
   .strict-badge {
     position: absolute;
     top: 10px;
@@ -476,9 +481,9 @@
     font-weight: 600;
     letter-spacing: 0.08em;
     border-radius: 4px;
-    background: rgba(248, 81, 73, 0.15);
-    color: #f85149;
-    border: 1px solid rgba(248, 81, 73, 0.4);
+    background: var(--danger-soft);
+    color: var(--danger);
+    border: 1px solid var(--danger-soft);
     pointer-events: none;
     user-select: none;
   }
@@ -490,48 +495,59 @@
     margin: 0 auto 0.5rem;
   }
 
+  /* Track is the muted hairline at ~8% opacity — represented by the
+     --ink-4 token, which is the "stronger hairline" (§2.1) and reads
+     as faint at the 6px stroke. If we need a bespoke hairline-track
+     value later we can add one to Appendix A. */
   .ring-track {
-    stroke: rgba(255, 255, 255, 0.08);
+    stroke: var(--ink-4);
+    opacity: 0.5;
   }
 
+  /* v0.1 keeps the ring stroke on --accent regardless of session state
+     (§10.4); v1.1 swaps in --focus-mode / --micro-break / --rest-break
+     per phase. The semantic aliases already exist in tokens.css. */
   .ring-progress {
-    stroke: #58a6ff;
-    transition: stroke-dashoffset 80ms linear;
+    stroke: var(--accent);
+    transition: stroke-dashoffset var(--dur-small) linear;
   }
 
   .ring-text {
-    fill: #e6edf3;
-    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    fill: var(--text);
+    font-family: var(--font-mono);
     font-size: 28px;
     font-weight: 500;
+    font-variant-numeric: tabular-nums;
   }
 
   h1 {
     margin: 0.25rem 0 0.25rem;
     font-size: 1.25rem;
     font-weight: 600;
+    font-family: var(--font-display);
   }
 
   .exercise-name {
     margin: 0 0 0.5rem;
-    color: #c9d1d9;
+    color: var(--text-2);
     font-size: 0.95rem;
   }
 
   .exercise-name.muted {
-    color: #8b949e;
+    color: var(--text-muted);
   }
 
   .exercise-host {
     /* Constrain the host so each exercise SVG stays compact inside
-       the card instead of overflowing. */
+       the card instead of overflowing. --ink-3 surface so the
+       exercise art reads as "on a plinth" (§10.4). */
     height: 220px;
     display: grid;
     place-items: center;
     margin: 0 0 0.5rem;
     overflow: hidden;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, 0.35);
+    border-radius: var(--radius-card);
+    background: var(--ink-3);
   }
 
   /* Override each exercise component's `height: 100vh` so it lives
@@ -555,26 +571,29 @@
     margin-top: 0.5rem;
   }
 
+  /* §6.3 button variants. Order per the spec: ghost (Skip) →
+     secondary (Postpone) → primary (Done). */
   .btn {
     appearance: none;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
-    color: #e6edf3;
+    border: 1px solid var(--hairline);
+    background: var(--ink-3);
+    color: var(--text);
     padding: 0.5rem 0.95rem;
-    border-radius: 6px;
+    border-radius: var(--radius-input);
     font: inherit;
     font-size: 0.9rem;
     cursor: pointer;
-    transition: background 120ms ease, border-color 120ms ease;
+    transition: background var(--dur-small) var(--ease),
+      border-color var(--dur-small) var(--ease),
+      color var(--dur-small) var(--ease);
   }
 
   .btn:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--accent);
   }
 
   .btn:active:not(:disabled) {
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--ink-2);
   }
 
   .btn:disabled {
@@ -583,33 +602,35 @@
   }
 
   .btn-primary {
-    background: #238636;
-    border-color: rgba(35, 134, 54, 0.6);
-    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 600;
   }
 
   .btn-primary:hover:not(:disabled) {
-    background: #2ea043;
-    border-color: rgba(46, 160, 67, 0.7);
+    background: var(--accent-hi);
+    border-color: var(--accent-hi);
   }
 
   .btn-secondary {
-    background: rgba(88, 166, 255, 0.12);
-    border-color: rgba(88, 166, 255, 0.35);
-    color: #c9d1d9;
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--text-2);
   }
 
   .btn-secondary:hover:not(:disabled) {
-    background: rgba(88, 166, 255, 0.2);
-    border-color: rgba(88, 166, 255, 0.55);
+    background: var(--accent-soft);
+    border-color: var(--accent-hi);
   }
 
   .btn-ghost {
     background: transparent;
-    color: #8b949e;
+    border-color: transparent;
+    color: var(--text-muted);
   }
 
   .btn-ghost:hover:not(:disabled) {
-    color: #e6edf3;
+    color: var(--text);
   }
 </style>

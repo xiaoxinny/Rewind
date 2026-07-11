@@ -559,12 +559,13 @@
   }
   h2 {
     margin: 0 0 0.5rem;
-    font-size: 1.25rem;
+    font-size: 1.75rem;
+    font-family: var(--font-display);
   }
   details {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 8px;
+    background: var(--ink-2);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
     padding: 0.5rem 0.875rem;
   }
   details summary {
@@ -572,13 +573,14 @@
     font-weight: 600;
     padding: 0.25rem 0;
     list-style: none;
+    color: var(--text);
   }
   details summary::-webkit-details-marker {
     display: none;
   }
   details summary::before {
     content: "▸ ";
-    color: #8b949e;
+    color: var(--text-muted);
   }
   details[open] > summary::before {
     content: "▾ ";
@@ -594,7 +596,7 @@
     flex-direction: column;
     gap: 0.25rem;
     font-size: 0.875rem;
-    color: #c9d1d9;
+    color: var(--text-2);
   }
   label.row {
     flex-direction: row;
@@ -606,24 +608,32 @@
   input[type="time"],
   select {
     appearance: none;
-    background: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 4px;
+    background: var(--ink-3);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-input);
     padding: 0.35rem 0.5rem;
-    color: inherit;
+    color: var(--text);
     font: inherit;
+    font-variant-numeric: tabular-nums;
   }
+  /* Visible focus on the keyboard path only (§9.2). Keep the border
+     change so a mouse user still sees which input they're in. */
   input[type="number"]:focus,
   input[type="time"]:focus,
   select:focus {
-    border-color: #58a6ff;
-    outline: none;
+    border-color: var(--accent);
+  }
+  input[type="number"]:focus-visible,
+  input[type="time"]:focus-visible,
+  select:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
   }
   input[type="range"] {
-    accent-color: #58a6ff;
+    accent-color: var(--accent);
   }
   input:disabled + * {
-    color: #6e7681;
+    color: var(--text-faint);
   }
   .strictness {
     display: flex;
@@ -635,17 +645,20 @@
     align-items: center;
   }
   .hint {
-    color: #8b949e;
+    color: var(--text-muted);
     font-size: 0.85rem;
     margin: 0.25rem 0;
   }
+  /* §6.7 Banner variant="warning" pattern: --ink-3 surface,
+     --danger 3px left border. Re-using the §2.4 state tokens. */
   .warn {
-    color: #ffa198;
+    color: var(--text-2);
     font-size: 0.875rem;
     margin: 0.5rem 0 0;
-    background: #21262d;
-    border: 1px solid #f85149;
-    border-radius: 4px;
+    background: var(--ink-3);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--danger);
+    border-radius: var(--radius-input);
     padding: 0.5rem 0.625rem;
   }
   .row-actions {
@@ -655,23 +668,25 @@
   }
   .row-actions button {
     appearance: none;
-    background: #21262d;
-    border: 1px solid #30363d;
-    color: inherit;
+    background: var(--ink-3);
+    border: 1px solid var(--hairline);
+    color: var(--text);
     padding: 0.4rem 0.75rem;
-    border-radius: 4px;
+    border-radius: var(--radius-input);
     cursor: pointer;
+    transition: border-color var(--dur-small) var(--ease);
   }
   .row-actions button.danger {
-    border-color: #f85149;
-    color: #ffa198;
+    /* Per §6.3 variant="danger" — only on "Clear history". */
+    border-color: var(--danger);
+    color: var(--danger);
   }
   .row-actions button:hover {
-    border-color: #58a6ff;
+    border-color: var(--accent);
   }
   .cite {
-    background: #0d1117;
-    border-left: 3px solid #30363d;
+    background: var(--ink);
+    border-left: 3px solid var(--hairline);
     padding: 0.5rem 0.75rem;
     margin: 0.5rem 0;
     border-radius: 0 4px 4px 0;
@@ -680,33 +695,37 @@
     margin: 0 0 0.25rem;
     font-size: 0.95rem;
   }
+  /* The cite-line is the durable citation (§8.4). The exact text was
+     set by the audit fix at commit ed10be9; only the styling moves. */
   .cite-line {
     margin: 0.5rem 0 0;
-    color: #8b949e;
+    color: var(--text-muted);
     font-size: 0.8rem;
-    font-style: italic;
+    font-family: var(--font-mono);
+    font-style: normal;
   }
 
   .cite-audit {
     margin: 0.75rem 0 0;
     padding-top: 0.5rem;
-    border-top: 1px solid #30363d;
-    color: #c9d1d9;
+    border-top: 1px solid var(--hairline);
+    color: var(--text-2);
     font-size: 0.85rem;
     line-height: 1.45;
   }
 
   .cite-audit a {
-    color: #58a6ff;
+    color: var(--accent);
   }
 
   .cite-audit a:hover {
     text-decoration: underline;
   }
   code {
-    background: #0d1117;
+    background: var(--ink);
     padding: 0 0.25rem;
     border-radius: 3px;
     font-size: 0.85em;
+    font-family: var(--font-mono);
   }
 </style>

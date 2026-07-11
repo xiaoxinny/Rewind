@@ -157,18 +157,19 @@
   }
   h2 {
     margin: 0 0 0.25rem;
-    font-size: 1.25rem;
+    font-size: 1.75rem;
+    font-family: var(--font-display);
   }
   article {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 8px;
+    background: var(--ink-2);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
     padding: 1rem 1.25rem;
   }
   article h3 {
     margin: 0 0 0.75rem;
     font-size: 0.95rem;
-    color: #8b949e;
+    color: var(--text-muted);
   }
   .bar-row {
     display: flex;
@@ -179,7 +180,7 @@
   .bar-cell {
     flex: 1 1 auto;
     height: 100%;
-    background: #0d1117;
+    background: var(--ink);
     border-radius: 4px;
     position: relative;
     display: flex;
@@ -188,19 +189,20 @@
   .bar {
     width: 100%;
     border-radius: 4px 4px 0 0;
-    transition: height 200ms ease-in-out;
+    transition: height var(--dur-small) var(--ease);
   }
+  /* Per §6.6 + §10.3: flat solid fills, no gradients on data. */
   .bar-taken {
-    background: linear-gradient(to top, #1f6feb, #58a6ff);
+    background: var(--accent);
   }
   .bar-water {
-    background: linear-gradient(to top, #1f6feb, #4dd0e1);
+    background: var(--micro-break);
   }
   .legend {
     display: flex;
     justify-content: space-between;
     margin-top: 0.5rem;
-    color: #8b949e;
+    color: var(--text-muted);
     font-size: 0.75rem;
   }
   .day-label {
@@ -209,11 +211,11 @@
   ul {
     margin: 0;
     padding-left: 1.125rem;
-    color: #c9d1d9;
+    color: var(--text-2);
   }
   .dim {
     margin: 0.75rem 0 0;
-    color: #8b949e;
+    color: var(--text-muted);
     font-size: 0.85rem;
     font-style: italic;
   }
