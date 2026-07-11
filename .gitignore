@@ -17,3 +17,6 @@ src-tauri/gen/
 *.swp
 *.swo
 .DS_Store
+
+# Hermes agent working notes (per-project context scratchpad, not source)
+.hermes.md

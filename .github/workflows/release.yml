@@ -1,0 +1,105 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Allow only one concurrent release; queued runs cancel when a new
+# tag is pushed while the previous release is still building.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build (${{ matrix.platform }}, ${{ matrix.args }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-22.04
+            args: ''
+          - platform: macos-latest
+            args: '--target aarch64-apple-darwin'
+          - platform: macos-latest
+            args: '--target x86_64-apple-darwin'
+          - platform: windows-latest
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          # tauri-action uploads assets to a release created from this commit;
+          # fetch tags so the action can resolve the pushed tag.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            .
+            crates/* -> target
+          shared-key: ${{ matrix.platform }}-${{ matrix.args }}
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          # tauri-action@1 reads the lockfile at the workspace root.
+          cache: npm
+
+      - name: install Linux system dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xdg-utils
+
+      - name: install frontend dependencies
+        run: npm ci
+
+      - name: run core tests
+        # Gate the x11-idle test profile to keep the Tauri dylib clean.
+        # See docs/M6.md "Known issues".
+        run: |
+          cargo test \
+            -p rewind-core \
+            -p rewind-adapters \
+            -p rewind-storage
+
+      - name: frontend type-check
+        run: npm run check
+
+      - name: frontend build
+        run: npm run build
+
+      - name: build & upload artifacts (tauri-action)
+        uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # The tag that triggered this run; tauri-action reads __VERSION__
+          # from the first x.y.z match in the tag.
+          tagName: ${{ github.ref_name }}
+          # The tauri-action@1 default `releaseName` is the tag itself;
+          # leave it so the release title matches the tag exactly.
+          releaseName: ${{ github.ref_name }}
+          # Skip the bundled updater JSON — Rewind ships a portable
+          # installer set with no in-app updater configured for v0.1.0.
+          uploadUpdaterJson: false
+          args: ${{ matrix.args }}
