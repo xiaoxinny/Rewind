@@ -459,40 +459,67 @@
       <h3>The 20-20-20 rule</h3>
       <p>
         Every 20 minutes, look at something 20 feet away for 20 seconds.
-        Recommended by the American Optometric Association as a
-        habit-style counter to digital eye strain. Note that a 2023
-        Optometry &amp; Vision Science study did not find scheduled
-        20-second breaks prevented strain — <strong>treat the rule as
+        The American Optometric Association lists this as a tip to help
+        alleviate digital eyestrain. A 2023 Optometry &amp; Vision Science
+        study (Johnson et al.) tested scheduled 20-second breaks in a
+        40-minute reading task and found no measurable effect on eye
+        strain, reading speed, or accuracy — <strong>treat the rule as
         a helpful habit, not a treatment</strong>.
       </p>
-      <p class="cite-line">AOA; Singh et al. 2022; Optom Vis Sci 2023.</p>
+      <p class="cite-line">
+        AOA, aoa.org/healthy-eyes/eye-and-vision-conditions/computer-vision-syndrome;
+        Johnson et al. 2023, Optom Vis Sci 100(1):52–56, doi:10.1097/OPX.0000000000001971 (PMID 36473088).
+      </p>
     </article>
 
     <article class="cite">
       <h3>Rewind is a habit tool, not a treatment</h3>
       <p>
-        Rewind nudges you toward healthier screen habits. It does not
-        diagnose, treat, or prevent any condition. If you have eye,
-        posture, or hydration concerns, consult a clinician.
+        Rewind reminds you to build healthier screen habits. It does not
+        diagnose, treat, or prevent any condition — a 2022 systematic
+        review of 45 RCTs (4,497 participants) on computer vision syndrome
+        interventions found no high-certainty evidence that any
+        intervention (eye breaks, blue-light lenses, multifocals, or
+        supplements) reliably reduces digital eye strain. If something
+        hurts, see a clinician.
       </p>
-      <p class="cite-line">Singh et al. 2022 (BMJ Open).</p>
+      <p class="cite-line">
+        Singh et al. 2022, Ophthalmology 129(10):1192–1215,
+        doi:10.1016/j.ophtha.2022.05.009 (PMID 35597519).
+      </p>
     </article>
 
     <article class="cite">
       <h3>How much should you drink?</h3>
       <p>
-        A reasonable starting point is ~2 L of fluids per day (about
-        8 cups), adjusted for body size, climate, and activity. Spread
-        intake across your waking hours — long gaps encourage
-        catch-up drinking, which can stress the kidneys.
+        Rewind's default goal is <strong>~2&nbsp;L of fluids per day</strong>
+        (about 8&nbsp;cups). That's a safe floor, not a universal target —
+        the Mayo Clinic estimates most adults need
+        <a href="https://www.mayoclinic.org/healthy-lifestyle/nutrition-and-healthy-eating/in-depth/water/art-20044256">2.7&nbsp;L (women) to 3.7&nbsp;L (men)</a>
+        of <em>total</em> fluid per day, and roughly 20% of that comes from food
+        rather than drinks. Raise the goal in Settings to match your body size,
+        climate, and activity.
+      </p>
+      <p>
+        A steady sipping pattern through the day is gentler on the body than
+        a few large volumes — the kidneys excrete water more or less
+        continuously, not in boluses.
       </p>
       <p class="warn">
-        ⚠ The Cleveland Clinic advises against drinking more than ~1 L
-        per hour sustained intake — overhydration can cause
-        hyponatremia. Rewind's reminders are intentionally capped at
-        one glass per half hour.
+        ⚠ Sustained intake above roughly
+        <strong>1&nbsp;L per hour</strong> can outpace the kidneys' ability to
+        clear water and lead to hyponatremia (blood sodium &lt;135&nbsp;mmol/L) —
+        <a href="https://my.clevelandclinic.org/health/diseases/water-intoxication">Cleveland Clinic, 2024</a>;
+        <a href="https://www.mayoclinic.org/diseases-conditions/hyponatremia/symptoms-causes/syc-20373711">Mayo Clinic, 2025</a>.
+        Rewind's reminders are capped at <strong>one 250&nbsp;mL glass every
+        30&nbsp;minutes</strong> — a worst-case cadence-following intake of
+        0.5&nbsp;L/hr, well under that ceiling.
       </p>
-      <p class="cite-line">Mayo Clinic 2023; Cleveland Clinic 2022.</p>
+      <p class="cite-line">
+        Mayo Clinic, Hyponatremia (reviewed July 2025);
+        Mayo Clinic, Water: How much should you drink every day?;
+        Cleveland Clinic, Water Intoxication (reviewed September 2024).
+      </p>
     </article>
   </details>
 </section>
