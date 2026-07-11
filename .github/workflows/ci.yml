@@ -50,12 +50,10 @@ jobs:
 
       - name: run core tests
         # Gate the x11-idle test profile to keep the Tauri dylib clean.
-        # See docs/M6.md "Known issues".
-        run: |
-          cargo test \
-            -p rewind-core \
-            -p rewind-adapters \
-            -p rewind-storage
+        # See docs/M6.md "Known issues". The test command is on a single
+        # line because Windows runners use PowerShell, which does not
+        # treat backslash-newline as a continuation under `run: |`.
+        run: cargo test -p rewind-core -p rewind-adapters -p rewind-storage
 
   frontend:
     name: frontend
