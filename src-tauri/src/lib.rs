@@ -154,7 +154,15 @@ fn build_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
     let quit_item = MenuItem::with_id(app, "quit", "Quit Rewind", true, None::<&str>)?;
     let menu = Menu::with_items(app, &[&open_item, &pause_item, &quit_item])?;
 
-    let icon = tauri::image::Image::from_path("icons/32x32.png")?;
+    // Compile the tray icon into the binary. Using a relative path like
+    // "icons/32x32.png" would resolve against the launch CWD, which is `/`
+    // (or `/Applications`) when launched via `open /Applications/Rewind.app`
+    // on macOS. That relative-path failure caused the v0.1.0 SIGABRT in
+    // did_finish_launching: from_path returned Err, the `?` propagated it
+    // out of the setup closure, and Tauri explicitly panicked with
+    // "Setup crashed". `include_bytes!` makes the icon lookup independent
+    // of CWD entirely.
+    let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/32x32.png"))?;
 
     TrayIconBuilder::with_id("rewind-tray")
         .icon(icon)
