@@ -51,7 +51,7 @@ pub fn start(
     clock: Arc<dyn Clock>,
     storage: StorageApp,
 ) {
-    tokio::spawn(async move {
+    tauri::async_runtime::spawn(async move {
         let mut ticker = tokio::time::interval(Duration::from_secs(1));
         ticker.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
         let mut last_state: Option<State> = None;
