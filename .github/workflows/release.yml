@@ -19,12 +19,16 @@ jobs:
       matrix:
         include:
           - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
             args: ''
           - platform: macos-latest
+            target: aarch64-apple-darwin
             args: '--target aarch64-apple-darwin'
           - platform: macos-latest
+            target: x86_64-apple-darwin
             args: '--target x86_64-apple-darwin'
           - platform: windows-latest
+            target: x86_64-pc-windows-msvc
             args: ''
 
     runs-on: ${{ matrix.platform }}
@@ -43,6 +47,16 @@ jobs:
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
+
+      # The macos-latest runner image only ships aarch64-apple-darwin as
+      # a pre-installed rustup target; x86_64-apple-darwin must be added
+      # explicitly, otherwise tauri-action fails with
+      # "Target x86_64-apple-darwin is not installed".
+      # Linux and Windows runners already have their native target, so
+      # this step is a no-op there.
+      - name: install Rust target
+        if: matrix.platform == 'macos-latest'
+        run: rustup target add ${{ matrix.target }}
 
       - name: cache Rust
         uses: Swatinem/rust-cache@v2
