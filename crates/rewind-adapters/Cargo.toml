@@ -31,8 +31,8 @@ thiserror = { workspace = true }
 # Seconds-since-last-input on Win/macOS/X11. On Linux this is X11
 # (XScreenSaverQueryInfo); on Wayland we fall back to
 # `WaylandIdleSource` / `DegradedIdleSource` from the per-OS picker.
-# Pinned at 0.3 per the M2 spec; bumped if 0.3.x fails to build on
-# this toolchain (see `M2.md`).
+# Pinned at 0.3; bumped if 0.3.x fails to build on
+# this toolchain.
 #
 # Gated behind the `x11-idle` feature so the host binary (rewind)
 # doesn't *also* have to link libX11.a into its Tauri dylib. Tauri

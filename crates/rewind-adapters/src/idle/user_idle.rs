@@ -2,10 +2,8 @@
 //! `user-idle` crate (XScreenSaverQueryInfo on X11,
 //! `GetLastInputInfo` on Windows, CoreGraphics on macOS).
 //!
-//! See implementation plan §4 ("Rust crates — `user-idle`"),
-//! §7f (`idle/policy.rs`), and §18 (Wayland caveat — Wayland is
-//! **not** handled here; the picker routes Wayland sessions to
-//! `WaylandIdleSource` or `DegradedIdleSource`).
+//! Wayland is **not** handled here; the picker routes Wayland
+//! sessions to `WaylandIdleSource` or `DegradedIdleSource`.
 //!
 //! Gated behind the `x11-idle` feature so a build that doesn't need
 //! X11 support (e.g. macOS / Windows users) can drop the libX11

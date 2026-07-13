@@ -9,7 +9,7 @@
 //!   [`IdleReliability::Unavailable`]. The engine uses this signal
 //!   to switch to **timer-only mode** (no idle pause/reset) and the
 //!   UI shows the honest "screen-time tracking limited on this
-//!   session" note from the implementation plan §7f.
+//!   session" note.
 //!
 //! * [`TimerOnlyIdleSource`] — test-only double. Same `Duration::ZERO`
 //!   answer but reports [`IdleReliability::Unreliable`] so tests

@@ -1,7 +1,7 @@
 <script lang="ts">
   // Stats — minimal daily summary for v1. CSS-only bar chart for the
-  // last 7 days; no chart library (per implementation plan §10).
-  // Rich analytics (streaks, charts, exports) is roadmap.
+  // last 7 days; no chart library.
+  // Rich analytics (streaks, charts, exports) is a future feature.
   //
   // Same `$state` vs `state`-name collision as Settings.svelte: the
   // rune and the imported mirror are visually too similar, so we
@@ -16,7 +16,7 @@
   let dailyBuckets: DailyAggregate[] = $state([]);
   let hydrationByDay: { day: string; ml: number }[] = $state([]);
 
-  // Local-day key. Plan §7f requires aggregates key on the **local**
+  // Local-day key. Aggregates key on the **local**
   // day; the engine and storage layer use `time::OffsetDateTime` for
   // DST safety. Frontend `new Date(ms).toISOString().slice(0,10)`
   // produces the UTC date — silently wrong for any user whose
@@ -190,7 +190,7 @@
     border-radius: 4px 4px 0 0;
     transition: height var(--dur-small) var(--ease);
   }
-  /* Per §6.6 + §10.3: flat solid fills, no gradients on data. */
+  /* Flat solid fills, no gradients on data. */
   .bar-taken {
     background: var(--accent);
   }

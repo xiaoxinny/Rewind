@@ -1,7 +1,7 @@
 //! Rewind shell — composition root.
 //!
 //! Ties the engine, adapters, and storage together behind Tauri v2.
-//! M6 wires in the SQLite-backed history repo (`StorageApp`) +
+//! SQLite-backed history repo (`StorageApp`) +
 //! the `tauri-plugin-store` based `ConfigStore` for `AppConfig`.
 //!
 //! Sub-modules:
@@ -49,7 +49,7 @@ pub use wiring::Wiring;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        // Tauri v2 plugins — see implementation plan §4.
+        // Tauri v2 plugins for desktop integration.
         .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
             // On a second launch, focus the existing main window.
             if let Some(window) = app.get_webview_window("main") {
@@ -157,14 +157,8 @@ fn build_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
     let quit_item = MenuItem::with_id(app, "quit", "Quit Rewind", true, None::<&str>)?;
     let menu = Menu::with_items(app, &[&open_item, &pause_item, &quit_item])?;
 
-    // Compile the tray icon into the binary. Using a relative path like
-    // "icons/32x32.png" would resolve against the launch CWD, which is `/`
-    // (or `/Applications`) when launched via `open /Applications/Rewind.app`
-    // on macOS. That relative-path failure caused the v0.1.0 SIGABRT in
-    // did_finish_launching: from_path returned Err, the `?` propagated it
-    // out of the setup closure, and Tauri explicitly panicked with
-    // "Setup crashed". `include_bytes!` makes the icon lookup independent
-    // of CWD entirely.
+    // Tray icon compiled into the binary so it loads regardless of
+    // the launch CWD.
     let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/32x32.png"))?;
 
     TrayIconBuilder::with_id("rewind-tray")

@@ -1,5 +1,5 @@
 // Typed `invoke()` wrappers for every Rust command + an event
-// listener for `core-event`. M6 wires in every command the engine
+// listener for `core-event`. Wires in every command the engine
 // + storage expose — see `src-tauri/src/ipc.rs` for the Rust side.
 
 import { invoke } from "@tauri-apps/api/core";

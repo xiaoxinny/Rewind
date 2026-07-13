@@ -1,7 +1,6 @@
 //! Session — the break/state-machine half of the engine.
 //!
-//! See implementation plan §7e. The state machine is the heart of the
-//! app (DP-1).
+//! The state machine is the heart of the app.
 
 pub mod machine;
 pub mod state;

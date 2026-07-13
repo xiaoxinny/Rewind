@@ -1,9 +1,8 @@
 //! Adapter trait boundary — the seams between `rewind-core` and the
 //! outside world (OS, UI, persistence).
 //!
-//! See implementation plan §7b. Each port has a real impl in
-//! `rewind-adapters` (or `rewind-storage` for `HistoryRepo`) and a
-//! fake in tests.
+//! Each port has a real impl in `rewind-adapters` (or `rewind-storage`
+//! for `HistoryRepo`) and a fake in tests.
 
 use std::time::Duration;
 
@@ -18,7 +17,7 @@ use crate::model::{
 use crate::session::state::BreakKind;
 
 // ---------------------------------------------------------------------------
-// Idle source (§7b, §7f DP-2)
+// Idle source
 // ---------------------------------------------------------------------------
 
 /// How trustworthy the adapter considers its last reading. The engine
@@ -70,7 +69,7 @@ pub trait IdleSource: Send + Sync {
 }
 
 // ---------------------------------------------------------------------------
-// Notifier (§7b, §7g)
+// Notifier
 // ---------------------------------------------------------------------------
 
 /// Gentle-mode notification surface (system toast on platforms that
@@ -81,7 +80,7 @@ pub trait Notifier {
 }
 
 // ---------------------------------------------------------------------------
-// Tray (§7b)
+// Tray
 // ---------------------------------------------------------------------------
 
 /// Tray icon + tooltip + menu surface. Lives behind the trait so a
@@ -97,7 +96,7 @@ pub trait Tray {
 }
 
 // ---------------------------------------------------------------------------
-// Overlay (§11, M3+)
+// Overlay
 // ---------------------------------------------------------------------------
 
 /// Identifies a monitor. Format is platform-defined.
@@ -116,8 +115,9 @@ impl std::fmt::Display for DisplayId {
     }
 }
 
-/// Owns the overlay windows. M1 keeps a trivial `TauriOverlay` that
-/// just records the request — the real window management lands in M3.
+/// Owns the overlay windows. The shell keeps a trivial `TauriOverlay`
+/// that records requests; real window management is handled in
+/// `src-tauri/src/overlay_adapter.rs`.
 pub trait OverlayController {
     fn displays(&self) -> Vec<DisplayId>;
     fn show_break(&self, kind: BreakKind, p: BreakPresentation);
@@ -125,7 +125,7 @@ pub trait OverlayController {
 }
 
 // ---------------------------------------------------------------------------
-// Autostart (§4, M6)
+// Autostart
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Error)]
@@ -140,11 +140,11 @@ pub trait Autostart {
 }
 
 // ---------------------------------------------------------------------------
-// History repo (§8a, M6 — stub satisfied today via `NoopHistoryRepo`)
+// History repo (stub satisfied today via `NoopHistoryRepo`)
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// History repo errors (§8a, M6).
+// History repo errors.
 // ---------------------------------------------------------------------------
 
 /// Errors a `HistoryRepo` can report. Defined here (in core, not in
@@ -171,7 +171,7 @@ pub enum HistoryRepoError {
 pub type RepoResult<T> = std::result::Result<T, HistoryRepoError>;
 
 // ---------------------------------------------------------------------------
-// History repo (§8a, M6 — `SqliteHistoryRepo` is in `rewind-storage`)
+// History repo (`SqliteHistoryRepo` is in `rewind-storage`)
 // ---------------------------------------------------------------------------
 
 /// Append-only history access. Real impl lives in `rewind-storage`
@@ -180,10 +180,9 @@ pub type RepoResult<T> = std::result::Result<T, HistoryRepoError>;
 /// shape mirrors `crates/rewind-storage/src/migrations/0001_init.sql`
 /// 1-for-1.
 ///
-/// **M6** — the trait went from unit-returning to `async fn` so a
-/// SQLite I/O wait can never block the tick loop. The engine is
-/// unaffected (it does not depend on this trait). The shell calls
-/// these from inside the tokio runtime.
+/// The trait uses `async fn` so a SQLite I/O wait can never block the
+/// tick loop. The engine is unaffected (it does not depend on this
+/// trait). The shell calls these from inside the tokio runtime.
 #[async_trait::async_trait]
 pub trait HistoryRepo: Send + Sync {
     /// Persist a single session record. Returns the new row id.

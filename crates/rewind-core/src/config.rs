@@ -1,8 +1,7 @@
 //! `AppConfig` — every tunable (breaks, strictness, idle, reminders,
 //! hydration, posture, quiet hours, system) and its defaults.
 //!
-//! See implementation plan §8b for the JSON shape. The struct is
-//! mirrored verbatim by `src/lib/types.ts` on the frontend.
+//! The struct is mirrored verbatim by `src/lib/types.ts` on the frontend.
 
 use std::time::Duration;
 
@@ -22,7 +21,7 @@ fn sec(s: u32) -> Duration {
     Duration::from_secs(u64::from(s))
 }
 
-/// Break cadence and pre/post-break behaviour (§8b, §7e).
+/// Break cadence and pre/post-break behaviour.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct BreakConfig {
     /// Minutes between each micro (20-20-20) break. Default `20`.
@@ -96,12 +95,12 @@ impl BreakConfig {
     }
 }
 
-/// Idle pause/reset policy (§7f, §8b, DP-2).
+/// Idle pause/reset policy.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct IdleConfig {
     /// Whether idle-driven pause/reset is active. On GNOME Wayland
     /// the adapter reports `Unreliable` and the shell flips this off
-    /// automatically in M2; for M1 we keep it on by default.
+    /// automatically; kept on by default.
     pub enabled: bool,
     /// Idle seconds before we transition to `Paused{Idle}`. Default
     /// `90`.
@@ -137,7 +136,7 @@ impl IdleConfig {
     }
 }
 
-/// Reminder surface toggles (§8b, §13). Each pillar can be muted
+/// Reminder surface toggles. Each pillar can be muted
 /// independently.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ReminderToggles {
@@ -158,7 +157,7 @@ impl Default for ReminderToggles {
     }
 }
 
-/// Hydration tunables (§7h DP-4, §8b).
+/// Hydration tunables.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct HydrationConfig {
     /// Daily fluid intake goal in millilitres. Default `2000`.
@@ -182,7 +181,7 @@ impl Default for HydrationConfig {
     }
 }
 
-/// Posture tunables (§7h, §8b).
+/// Posture tunables.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct PostureConfig {
     /// Minutes between posture nudges. Default `40`.
@@ -201,7 +200,7 @@ impl PostureConfig {
     }
 }
 
-/// Quiet hours (§8b, §13). When `enabled` is `true` and the wall
+/// Quiet hours. When `enabled` is `true` and the wall
 /// clock is inside `[start, end)`, the scheduler defers reminders.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct QuietHoursConfig {
@@ -220,7 +219,7 @@ impl Default for QuietHoursConfig {
     }
 }
 
-/// System-level tunables (§8b).
+/// System-level tunables.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct SystemConfig {
     pub autostart: bool,
@@ -438,7 +437,7 @@ mod tests {
         let cfg = AppConfig::default();
         let json = serde_json::to_string_pretty(&cfg).unwrap();
         // A handful of representative assertions against the
-        // expected §8b shape.
+        // expected JSON shape.
         assert!(
             json.contains("\"microIntervalMin\"") == false,
             "snake_case in core; frontend mirrors"

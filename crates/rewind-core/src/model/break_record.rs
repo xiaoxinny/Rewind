@@ -1,8 +1,8 @@
 //! `BreakRecord` — DTO for a single break (micro or rest).
 //!
-//! See implementation plan §8a. Landed as a placeholder struct in M1
-//! so the rest of the workspace compiles. The SQLite migration and
-//! the round-trip from `sqlx` land in M6.
+//! Serialised across the IPC bridge and persisted in SQLite.
+//! The struct mirrors the `break_record` table schema in
+//! `crates/rewind-storage/src/migrations/0001_init.sql`.
 
 use serde::{Deserialize, Serialize};
 

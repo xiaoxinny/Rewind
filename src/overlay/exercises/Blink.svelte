@@ -64,7 +64,7 @@
     margin: 0 0 1rem;
   }
   /* CSS-only; .eye / .pupil / .bar-fill swap to the micro-break hue
-     family per §10.5. */
+     family. */
   .eye {
     width: 220px;
     height: 110px;

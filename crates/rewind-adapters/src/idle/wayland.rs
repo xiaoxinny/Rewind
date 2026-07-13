@@ -2,10 +2,9 @@
 //!
 //! KWin (KDE) and Sway expose idle via the standard Wayland
 //! protocols; **GNOME / Mutter does not** and is the case the
-//! [`DegradedIdleSource`](super::DegradedIdleSource) handles. See
-//! implementation plan §18.
+//! [`DegradedIdleSource`](super::DegradedIdleSource) handles.
 //!
-//! ### M2 status
+//! ### Status
 //!
 //! Implementing `ext-idle-notify-v1` in pure Rust is non-trivial:
 //! a correct impl needs a Wayland connection, the protocol XML
@@ -15,12 +14,11 @@
 //! The "right" place for that is `wayland-client` + async
 //! (calloop / tokio-integration).
 //!
-//! For **M2** we ship the wrapper, set the right reliability
-//! flag, and accept that the GNOME / mutter case flows through
+//! We ship the wrapper, set the right reliability flag, and accept
+//! that the GNOME / mutter case flows through
 //! [`DegradedIdleSource`](super::DegradedIdleSource) at the factory
-//! level (per §18, GNOME is the explicit fallback target). The
-//! KWin / Sway / wl-roots case will be wired in a follow-up
-//! milestone (see `M2.md`).
+//! level (GNOME is the explicit fallback target). The KWin / Sway
+//! / wl-roots case will be wired in a follow-up commit.
 //!
 //! In the meantime, every call to `idle_time()` returns
 //! `Duration::ZERO` with [`IdleReliability::Unreliable`]. The
@@ -47,8 +45,8 @@ impl WaylandIdleSource {
 
 impl IdleSource for WaylandIdleSource {
     fn idle_time(&self) -> Result<Duration, IdleError> {
-        // M2 stub: the real protocol implementation lands in a
-        // follow-up milestone. Return ZERO so the engine can
+        // Stub; the real protocol implementation lands in a
+        // follow-up commit. Return ZERO so the engine can
         // still proceed on its own timer in `idle-policy.rs`'s
         // non-idle branches (and so the picker returns a usable
         // trait object).
@@ -67,9 +65,7 @@ impl IdleSource for WaylandIdleSource {
         // just don't want the engine to act on it for pause
         // / reset until a human has eyeballed it. Note the
         // engine treats both `Unreliable` and `Unavailable`
-        // as "no pause/reset" (it's only one bit per the
-        // implementation plan §7f: "if `Unreliable` /
-        // `Unavailable` … run **timer-only mode**"), so
+        // as "no pause/reset" (run **timer-only mode**), so
         // functionally we're equivalent to the degraded
         // path today.
         IdleReliability::Unreliable
@@ -104,7 +100,7 @@ mod tests {
     #[test]
     fn never_errors() {
         let s = WaylandIdleSource::new();
-        // The M2 stub never returns an error — that's by
+        // The stub never returns an error — that's by
         // design (see impl). Real impl in a follow-up will
         // return `Transient` if the Wayland socket dies.
         for _ in 0..3 {

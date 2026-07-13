@@ -1,5 +1,5 @@
 //! Integration tests for `rewind-storage` against an in-memory SQLite
-//! pool. See implementation plan §16.
+//! pool.
 //!
 //! All tests run on the same `#[tokio::test]` async runtime each
 //! (no shared state between tests). Each test opens its own pool

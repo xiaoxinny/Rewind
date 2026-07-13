@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 # fix-macos-v0.1.0.sh
-# One-shot hotfix for Rewind v0.1.0 macOS installs that crash with
-# "App quit unexpectedly" on launch.
+# Re-signs the installed Rewind.app with macOS Sequoia's required
+# entitlements. Use this if Rewind v0.1.0 won't launch after
+# `xattr -cr /Applications/Rewind.app`.
 #
-# Root cause: the v0.1.0 .app ships with zero entitlements, which causes
-# the WKWebView/JIT initialization to fail on macOS Sequoia 15+. v0.1.1
-# fixes this at build time. This script patches the v0.1.0 install in
-# place: strips the quarantine xattr and ad-hoc re-signs the .app with
-# the entitlements required to run on Sequoia.
+# Root cause: the v0.1.0 .app ships with zero entitlements, which
+# causes WKWebView/JIT initialization to fail on macOS Sequoia 15+.
+# v0.1.1 fixes this at build time. This script patches the v0.1.0
+# install in place: strips the quarantine xattr and ad-hoc re-signs
+# the .app with the entitlements required to run on Sequoia.
 #
-# Note: this script CANNOT fix the second v0.1.0 failure mode (a relative
-# tray-icon path that resolves against the launch CWD). That bug lives in
-# the binary and requires v0.1.1. The entitlement re-sign is enough to
-# get v0.1.0 past the Setup crashed panic on most systems, but if you
-# still see "App quit unexpectedly" after running this script, install
-# v0.1.1 from the releases page.
+# Note: this script CANNOT fix the second v0.1.0 failure mode (a
+# relative tray-icon path that resolves against the launch CWD).
+# That bug lives in the binary and requires v0.1.1. If you still see
+# launch failures after running this script, install v0.1.1 from the
+# releases page.
 #
 # Usage:
 #   ./fix-macos-v0.1.0.sh /Applications/Rewind.app

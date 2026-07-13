@@ -1,10 +1,10 @@
-//! The session/break state machine — the heart of Rewind (DP-1).
+//! The session/break state machine — the heart of Rewind.
 //!
-//! See implementation plan §7e for the full transition table. Timers
-//! are stored as **target monotonic timestamps**, not decrementing
-//! counters — so a fake clock can jump time instantly in tests.
+//! Timers are stored as **target monotonic timestamps**, not
+//! decrementing counters — so a fake clock can jump time instantly
+//! in tests.
 //!
-//! ## Transition table (§7e, concise)
+//! ## Transition table (concise)
 //!
 //! ```text
 //! Focus         micro timer expires → PreBreak{Micro} or MicroBreak
@@ -216,8 +216,7 @@ impl SessionMachine {
                 let rest_due = self.timers.next_rest_at.map(|t| now >= t).unwrap_or(false);
                 if micro_due || rest_due {
                     // Prefer rest if it's due and (micro not due OR
-                    // rest is sooner). For M1 simplicity: prefer rest
-                    // if due, else micro.
+                    // rest is sooner). Prefer rest if due, else micro.
                     let kind = if rest_due {
                         BreakKind::Rest
                     } else {
@@ -239,7 +238,7 @@ impl SessionMachine {
             }
 
             SessionState::MicroBreak { .. } | SessionState::RestBreak { .. } => {
-                // Check natural satisfaction first (§7e last row).
+                // Check natural satisfaction first.
                 let micro_dur = self.config.breaks.micro_duration().as_secs();
                 let rest_dur = self.config.breaks.rest_duration().as_secs();
                 let break_dur = match self.state {

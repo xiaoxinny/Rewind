@@ -1,7 +1,7 @@
 //! Posture scheduler.
 //!
 //! Stand/stretch nudge every **40 min** (default); prefer coalescing
-//! onto a nearby rest break (per §7h). Coalescing is implemented at
+//! onto a nearby rest break. Coalescing is implemented at
 //! the engine/coordinator level — this scheduler just reports when a
 //! posture reminder is due.
 
@@ -11,7 +11,7 @@ use crate::clock::Millis;
 use crate::config::PostureConfig;
 use crate::scheduler::reminder::{Priority, Reminder, ReminderKind};
 
-/// Configuration knobs. Default is the plan §7h 40-min interval.
+/// Configuration knobs. Default is the 40-min interval.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct PostureSchedulerConfig {
     pub interval_ms: Millis,

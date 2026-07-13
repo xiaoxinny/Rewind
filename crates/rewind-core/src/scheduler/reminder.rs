@@ -21,7 +21,7 @@ pub enum Priority {
 
 impl From<ReminderKind> for Priority {
     fn from(k: ReminderKind) -> Self {
-        // §7g: EyeBreak=High, Posture=Medium, Hydration=Low.
+        // EyeBreak=High, Posture=Medium, Hydration=Low.
         match k {
             ReminderKind::EyeBreak => Priority::High,
             ReminderKind::Posture => Priority::Medium,

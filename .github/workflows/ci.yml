@@ -49,7 +49,6 @@ jobs:
             xdg-utils
 
       - name: run core tests
-        # Gate the x11-idle test profile to keep the Tauri dylib clean.
         # The test command is on a single line because Windows runners
         # use PowerShell, which does not treat backslash-newline as a
         # continuation under `run: |`.

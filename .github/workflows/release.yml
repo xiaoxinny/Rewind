@@ -48,12 +48,9 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
-      # The macos-latest runner image only ships aarch64-apple-darwin as
-      # a pre-installed rustup target; x86_64-apple-darwin must be added
-      # explicitly, otherwise tauri-action fails with
-      # "Target x86_64-apple-darwin is not installed".
-      # Linux and Windows runners already have their native target, so
-      # this step is a no-op there.
+      # The macos-latest runner image only ships aarch64-apple-darwin
+      # as a pre-installed target; x86_64-apple-darwin must be added
+      # explicitly.
       - name: install Rust target
         if: matrix.platform == 'macos-latest'
         run: rustup target add ${{ matrix.target }}
@@ -88,7 +85,6 @@ jobs:
         run: npm ci
 
       - name: run core tests
-        # Gate the x11-idle test profile to keep the Tauri dylib clean.
         # The test command is on a single line because Windows runners
         # use PowerShell, which does not treat backslash-newline as a
         # continuation under `run: |`.

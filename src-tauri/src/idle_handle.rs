@@ -1,7 +1,6 @@
 //! Wrapped `IdleSource` kept in Tauri's state. The Settings page
 //! uses `reliable()` to decide whether to grey out the idle
-//! thresholds (per §13 — "auto-greyed with explanation on GNOME
-//! Wayland").
+//! thresholds — auto-greyed with explanation on GNOME Wayland.
 
 use rewind_core::ports::{IdleReliability, IdleSource};
 

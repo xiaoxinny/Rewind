@@ -1,9 +1,8 @@
 //! Session state — enums for state, break kind, strictness, pause reason.
 //!
-//! See implementation plan §7e. The state machine is the heart of
-//! Rewind (DP-1). These types are serialized across the IPC bridge
-//! (`CoreEvent::StateChanged`) — keep the derive set conservative and
-//! the variants stable.
+//! The state machine is the heart of Rewind. These types are
+//! serialized across the IPC bridge (`CoreEvent::StateChanged`) — keep
+//! the derive set conservative and the variants stable.
 
 use std::fmt;
 
@@ -19,8 +18,8 @@ pub enum BreakKind {
 }
 
 impl BreakKind {
-    /// Lower-case stable string label for sqlite / JSON. Plan §8a
-    /// uses `"micro"` and `"rest"`.
+    /// Lower-case stable string label for sqlite / JSON.
+    /// Uses `"micro"` and `"rest"`.
     pub fn as_str(self) -> &'static str {
         match self {
             BreakKind::Micro => "micro",
@@ -88,7 +87,7 @@ impl Strictness {
 
 impl Default for Strictness {
     fn default() -> Self {
-        // Per §13 / §8b — ship a Gentle default.
+        // Ship a Gentle default.
         Strictness::Gentle
     }
 }

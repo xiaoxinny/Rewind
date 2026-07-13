@@ -1,8 +1,8 @@
 //! `SessionRecord` — DTO for a focus session.
 //!
-//! See implementation plan §8a. Landed as a placeholder struct in M1
-//! so the rest of the workspace compiles. The SQLite migration lands
-//! in M6.
+//! Serialised across the IPC bridge and persisted in SQLite.
+//! The struct mirrors the `session` table schema in
+//! `crates/rewind-storage/src/migrations/0001_init.sql`.
 
 use serde::{Deserialize, Serialize};
 

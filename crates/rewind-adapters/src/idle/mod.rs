@@ -1,7 +1,7 @@
 //! Idle sub-tree — multiple implementations behind one trait.
 //!
-//! See implementation plan §4 (deps), §7b (`IdleSource` trait),
-//! §7f (`idle/policy.rs`) and §18 (GNOME Wayland risk).
+//! `IdleSource` trait, idle pause/reset policy, and per-OS idle
+//! detection with a degraded fallback for GNOME Wayland.
 //!
 //! There are three concrete backends:
 //!
@@ -9,7 +9,7 @@
 //! |----------------------|---------------------------------------------------|---------|
 //! | [`UserIdleSource`]   | Default on Windows / macOS / X11 Linux            | `Reliable` |
 //! | [`WaylandIdleSource`]| `WAYLAND_DISPLAY` set **and** `XDG_SESSION_TYPE=wayland` on Linux |
-//! |                      | (protocol scaffolding in place; reliability is intentionally `Unreliable` until the GNOME path is done — see §18) | `Unreliable` |
+//! |                      | (protocol scaffolding in place; reliability is intentionally `Unreliable` until the GNOME path is done) | `Unreliable` |
 //! | [`DegradedIdleSource`]| Final fallback (headless, `XDG_SESSION_TYPE=headless`, anything that fails to construct a real source) | `Unavailable` |
 //!
 //! Plus a fourth, test-only backend: [`TimerOnlyIdleSource`] returns

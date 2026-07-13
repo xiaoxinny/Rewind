@@ -6,7 +6,7 @@
 //! — the policy itself is stateless, which makes it trivially testable
 //! with a fake clock.
 //!
-//! Recommended defaults (§7f): pause 90 s → `Paused{Idle}`, reset 300 s
+//! Recommended defaults: pause 90 s → `Paused{Idle}`, reset 300 s
 //! → on return reset the cycle, resume on `idle < 10 s`.
 
 use std::time::Duration;
@@ -36,7 +36,7 @@ pub enum IdleAction {
 /// `state` is the *current* `SessionState` the engine is in (used to
 /// short-circuit when paused). `config.enabled` gates the whole policy
 /// — the shell flips it off on platforms where the `IdleSource` is
-/// `Unreliable` or `Unavailable` (M2).
+/// `Unreliable` or `Unavailable`.
 pub fn evaluate(idle: Duration, state: &SessionState, config: &IdleConfig) -> IdleAction {
     if !config.enabled {
         return IdleAction::None;

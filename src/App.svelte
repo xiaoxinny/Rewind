@@ -1,5 +1,5 @@
 <script lang="ts">
-  // Top-level Svelte 5 shell for the Rewind dashboard. M6 introduces:
+  // Top-level Svelte 5 shell for the Rewind dashboard:
   //   * a simple route state ($state) — no router dependency
   //   * bootstrap() that wires the engine + storage listeners on mount
   //   * nav links between Dashboard / Settings / Stats
@@ -13,7 +13,7 @@
   import { loadInitial, onboardingState, restart } from "./lib/onboarding.svelte";
   import type { UnlistenFn } from "@tauri-apps/api/event";
 
-  // Simple route state — no router dependency. M6 ships a single
+  // Simple route state — no router dependency. The shell ships a single
   // shell; routing could move to a real router post-v1. Track 2
   // adds the four onboarding route values; `route` switches into
   // Onboarding.svelte when `onboardingState.step !== null`.
@@ -207,7 +207,7 @@
 
   /* The Dashboard `?` button (Track 2). Anchored top-right of the
      header so it doesn't shove the title around. 20px hit-target,
-     outline-only stroke icon (§7.1). */
+     outline-only stroke icon. */
   .tour-help {
     position: absolute;
     top: 0;
@@ -278,7 +278,7 @@
     display: block;
   }
 
-  /* Visible focus ring (DESIGN_LANGUAGE.md §9.2); keyboard-only. */
+  /* Visible focus ring; keyboard-only. */
   :global(:focus-visible) {
     outline: var(--focus-ring);
     outline-offset: 2px;

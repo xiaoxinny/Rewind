@@ -28,7 +28,7 @@ export default defineConfig(async () => ({
     },
   },
 
-  // Two Vite entry points — see implementation plan §6. The dashboard
+  // Two Vite entry points: main window + overlay window. The dashboard
   // is the main Svelte app; `overlay.html` ships a tiny bundle that
   // boots instantly for break overlays.
   build: {

@@ -1,13 +1,13 @@
 //! `rewind-storage` — SQLite-backed implementation of
 //! `rewind_core::ports::HistoryRepo`.
 //!
-//! M0–M5: stub. M6 lands the schema (`migrations/0001_init.sql` per
-//! implementation plan §8a), the `SqliteHistoryRepo`, the shell-side
-//! `open_db()` helper, and the test suite.
+//! Lands the schema (`migrations/0001_init.sql`), the
+//! `SqliteHistoryRepo`, the shell-side `open_db()` helper, and the
+//! test suite.
 //!
 //! The crate **does not depend on `tauri`** — it uses `sqlx::SqlitePool`
 //! directly. The shell layer (`src-tauri`) opens the connection at
-//! boot and hands the pool to the repo. See implementation plan §4.
+//! boot and hands the pool to the repo.
 
 pub mod repo;
 pub mod storage_error;

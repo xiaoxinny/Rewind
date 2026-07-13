@@ -1,5 +1,5 @@
 <script lang="ts">
-  // Settings — full §13 surface. M6 reads from `mirror.config` (the
+  // Settings — reads from `mirror.config` (the
   // Svelte-runes mirror) and persists through `setConfig()`.
   //
   // The `state` import below triggers Svelte 5's "Cannot use 'state'
@@ -696,7 +696,7 @@
     font: inherit;
     font-variant-numeric: tabular-nums;
   }
-  /* Visible focus on the keyboard path only (§9.2). Keep the border
+  /* Visible focus on the keyboard path only. Keep the border
      change so a mouse user still sees which input they're in. */
   input[type="number"]:focus,
   input[type="time"]:focus,
@@ -729,8 +729,8 @@
     font-size: 0.85rem;
     margin: 0.25rem 0;
   }
-  /* §6.7 Banner variant="warning" pattern: --ink-3 surface,
-     --danger 3px left border. Re-using the §2.4 state tokens. */
+  /* Banner variant="warning" pattern: --ink-3 surface,
+     --danger 3px left border. Re-using the state tokens. */
   .warn {
     color: var(--text-2);
     font-size: 0.875rem;
@@ -757,7 +757,7 @@
     transition: border-color var(--dur-small) var(--ease);
   }
   .row-actions button.danger {
-    /* Per §6.3 variant="danger" — only on "Clear history". */
+    /* variant="danger" — only on "Clear history". */
     border-color: var(--danger);
     color: var(--danger);
   }
@@ -775,7 +775,7 @@
     margin: 0 0 0.25rem;
     font-size: 0.95rem;
   }
-  /* The cite-line is the durable citation (§8.4). The exact text was
+  /* The cite-line is the durable citation. The exact text was
      set by the audit fix at commit ed10be9; only the styling moves. */
   .cite-line {
     margin: 0.5rem 0 0;
@@ -803,7 +803,7 @@
   }
 
   /* Track 2 — restart-tour row inside the About panel. The button
-     is a small secondary control (§6.3 variant="secondary"); the
+     is a small secondary control (variant="secondary"); the
      hint copy mirrors Settings voice (terse, present tense). */
   .restart-tour-row {
     margin: 0.5rem 0 0;

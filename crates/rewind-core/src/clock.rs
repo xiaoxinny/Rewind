@@ -3,8 +3,6 @@
 //! Splits wall-clock from monotonic so:
 //!   * hibernate / sleep never counts as active time (use [`Clock::monotonic`] for durations),
 //!   * day-bucketing is DST-safe (use [`Clock::now`] for local-day boundaries).
-//!
-//! See implementation plan §7a.
 
 use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};

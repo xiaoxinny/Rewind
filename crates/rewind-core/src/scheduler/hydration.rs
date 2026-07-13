@@ -12,7 +12,7 @@ use crate::scheduler::reminder::{Priority, Reminder, ReminderKind};
 const MINUTES_PER_DAY: u32 = 24 * 60;
 const MS_PER_MINUTE: Millis = 60_000;
 
-/// Configuration knobs. Defaults mirror §7h verbatim.
+/// Configuration knobs. Defaults mirror the spec verbatim.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct HydrationSchedulerConfig {
     pub goal_ml: u32,

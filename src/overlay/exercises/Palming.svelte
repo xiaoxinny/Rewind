@@ -1,5 +1,5 @@
 <script lang="ts">
-  // Palming — cover closed eyes with palms (M4 research). The dot
+  // Palming — cover closed eyes with palms. The dot
   // pulses to a slow breath-pacing tempo (4 s in / 4 s out).
   let { durationMs = 30_000 }: { durationMs?: number } = $props();
   let elapsed = $state(0);
@@ -50,9 +50,9 @@
     margin: 0 0 0.5rem;
     font-family: var(--font-display);
   }
-  /* Per Appendix A / §2.7: SVG fill attributes inside an exercise
-     component are an explicit carveout — the design language document
-     notes these remain inline hex literals. */
+  /* SVG fill attributes inside an exercise
+     component are an explicit carveout — these remain inline hex
+     literals. */
   svg {
     width: 200px;
     height: 200px;

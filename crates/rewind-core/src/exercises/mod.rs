@@ -1,8 +1,8 @@
-//! Exercise catalog (DP-6).
+//! Exercise catalog.
 //!
 //! Four built-in eye exercises; a rest break shows exactly one
 //! (default: rotation). Each definition is rendered by a matching
-//! Svelte component on the frontend. See implementation plan §7i.
+//! Svelte component on the frontend.
 
 pub mod catalog;
 

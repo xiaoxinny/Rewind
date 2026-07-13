@@ -27,7 +27,7 @@
     skip,
   } from "../lib/onboarding.svelte";
 
-  // Step counts for the numeric badge (1/4, 2/4, …). §3.2 mandates
+  // Step counts for the numeric badge (1/4, 2/4, …). Requires
   // `font-variant-numeric: tabular-nums` on every numeric so the
   // counter doesn't shift width as the user advances.
   const totalSteps = 4;
@@ -87,7 +87,7 @@
     Skip tour
   </button>
 
-  <!-- Step counter. Sentence case, tabular-nums (§3.2 / §8.1). -->
+  <!-- Step counter. Sentence case, tabular-nums. -->
   <p class="counter" aria-live="polite">
     <span>Step</span>
     <span class="counter-num">{stepCounter}</span>
@@ -390,7 +390,7 @@
     padding-top: var(--space-4);
   }
 
-  /* Skip button. Top-right ghost per §6.3; this is the only button
+  /* Skip button. Top-right ghost; this is the only button
      that exists outside the normal row at the bottom. */
   .skip {
     position: absolute;
@@ -415,7 +415,7 @@
     outline-offset: 2px;
   }
 
-  /* Step counter — small, mono, tabular-nums (§3.2 mandate). */
+  /* Step counter — small, mono, tabular-nums. */
   .counter {
     margin: 0;
     display: flex;
@@ -610,10 +610,10 @@
     line-height: 1.5;
   }
 
-  /* ---------- Cite-line (T1/T2/T3 templates — §8.4) ---------- */
+  /* ---------- Cite-line (T1/T2/T3 templates) ---------- */
   /* Style matches the existing Settings.svelte .cite-line (mono,
      small, --text-muted). All citations on every screen follow the
-     T1/T2/T3 templates from §8.4 verbatim. */
+     T1/T2/T3 templates verbatim. */
   :global(.onboarding) .cite-line,
   .cite-line {
     margin: var(--space-1) 0 0;
@@ -634,7 +634,7 @@
 
   /* ---------- Tray glyph (Enable screen) ---------- */
   /* Inline SVG uses `currentColor` so the icon picks up the body
-     text colour — no hex literals, no emoji (§7). */
+     text colour — no hex literals, no emoji. */
   .tray-glyph {
     display: inline-block;
     width: 1em;
@@ -653,7 +653,7 @@
   .primary-row {
     margin-top: var(--space-3);
     /* Send the Back button to the left and the primary CTA to the
-       right (per §6.3: order matters). When only one CTA exists
+       right. When only one CTA exists
        (welcome), the row still aligns it to the right via the
        `justify-content: flex-end` override below. */
     justify-content: flex-end;
@@ -665,7 +665,7 @@
     justify-content: flex-end;
   }
 
-  /* Buttons — primary / ghost per §6.3, exact tokens from §6.3. */
+  /* Buttons — primary / ghost, exact design tokens. */
   .actions button {
     appearance: none;
     font: inherit;

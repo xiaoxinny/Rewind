@@ -5,7 +5,7 @@
 //! Each command is a small function that grabs the shared `Engine`
 //! from Tauri's state, calls `engine.handle(...)` with the appropriate
 //! `CoreCommand`, and returns the resulting events (or a sanitized
-//! response payload). M6 also adds history-bound commands that read
+//! response payload). Also adds history-bound commands that read
 //! / write through `StorageApp`.
 
 use std::sync::{Arc, Mutex};

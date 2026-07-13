@@ -1,14 +1,12 @@
 //! `SqliteHistoryRepo` — the concrete `HistoryRepo` implementation
-//! backed by `sqlx::SqlitePool`. See implementation plan §8a and
-//! §16.
+//! backed by `sqlx::SqlitePool`.
 //!
 //! The storage crate has **no** `tauri` dependency; the shell wires
-//! a fully-built `SqlitePool` to the constructor. This is in line
-//! with the plan §4 ("Used directly, not via `tauri-plugin-sql`").
+//! a fully-built `SqlitePool` to the constructor.
 //!
 //! Plain `sqlx::query(...)` bindings are used everywhere rather than
 //! the `sqlx::query!` macros so a build-time `DATABASE_URL` is not
-//! needed (the plan §16 calls this out explicitly).
+//! needed.
 
 use std::path::Path;
 
@@ -119,8 +117,7 @@ impl SqliteHistoryRepo {
     }
 
     /// JSON dump of every history table. Used by the Settings
-    /// "Export data" button. The shape is stable enough for v1 —
-    /// `M6.md` documents it.
+    /// "Export data" button. The shape is stable for v1.
     pub async fn export_json(&self) -> StorageResult<serde_json::Value> {
         let sessions = sqlx::query("SELECT * FROM session ORDER BY id")
             .fetch_all(&self.pool)
@@ -390,7 +387,7 @@ fn parse_end_reason(s: &str) -> Option<CoreSessionEndReason> {
 fn parse_break_kind(s: &str) -> CoreBreakKind {
     match s {
         "rest" => CoreBreakKind::Rest,
-        // Plan §8a: "micro" | "rest". Anything else falls back to
+        // "micro" | "rest". Anything else falls back to
         // Micro — the column is a tag, not user input.
         _ => CoreBreakKind::Micro,
     }

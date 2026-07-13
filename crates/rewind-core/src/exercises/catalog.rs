@@ -8,8 +8,7 @@
 //! | `figure_eight` | Figure-eights   | 30 s     | Animated lazy-8 dot for the eyes. |
 
 /// An exercise definition rendered by the matching Svelte
-/// component. M4 populates the per-step structure; M1 carries just
-/// id/name/duration.
+/// component. Carries id/name/duration.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Exercise {
     pub id: &'static str,

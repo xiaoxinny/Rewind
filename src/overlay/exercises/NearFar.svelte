@@ -59,7 +59,7 @@
   }
   .target {
     /* The blue background uses --micro-break (the "look at this"
-       hue family per §10.5). The dot fill below is the exercise's
+       hue family. The dot fill below is the exercise's
        inline SVG carveout. */
     width: 48px;
     height: 48px;
@@ -76,7 +76,7 @@
     border-radius: 50%;
   }
   /* .dot is a CSS-only div (no inline SVG in NearFar), so this
-     uses --micro-break per §10.5: "the animated rings / dots
+     uses --micro-break: "the animated rings / dots
      currently use #58a6ff directly. Switch to var(--micro-break)". */
   .dot {
     width: 18px;

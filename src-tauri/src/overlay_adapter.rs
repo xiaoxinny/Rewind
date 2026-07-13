@@ -1,4 +1,4 @@
-//! Tauri-backed `OverlayController` (M3).
+//! Tauri-backed `OverlayController`.
 //!
 //! Owns the pre-declared `overlay` `WebviewWindow` (see
 //! `src-tauri/tauri.conf.json`) and turns the engine's
@@ -10,13 +10,13 @@
 //!   (the project's baseline), the visible effect is "covers the
 //!   primary monitor". On a single monitor this is identical to a
 //!   full-screen; on multi-monitor we currently cycle through
-//!   monitors by repeated `set_position` / `set_size` calls — for
-//!   M3 the goal is "visible cover", not per-monitor overlay
-//!   children (which would require a second `WebviewWindowBuilder`
-//!   per monitor and is deferred). The plan (§11) notes that the
-//!   strict ideal is "one overlay per monitor, secondaries show
-//!   passive dimmed copy"; M3 implements the part that ships and
-//!   leaves the per-monitor window list as a `// TODO M+`.
+//!   monitors by repeated `set_position` / `set_size` calls — the
+//!   goal is "visible cover", not per-monitor overlay children
+//!   (which would require a second `WebviewWindowBuilder` per
+//!   monitor and is deferred). The strict ideal is "one overlay
+//!   per monitor, secondaries show passive dimmed copy"; the
+//!   current implementation covers the part that ships and leaves
+//!   the per-monitor window list as a `// TODO`.
 //! * `Gentle` — small banner, **not** full-screen, no input
 //!   capture. The user can keep working through a 20 s look-away.
 //!
@@ -101,11 +101,11 @@ impl OverlayController for TauriOverlay {
                 // with `set_fullscreen` so the next cycle starts
                 // fresh).
                 //
-                // M3 delivers: fullscreen on every monitor, in turn.
+                // Fullscreen on every monitor, in turn.
                 // The "secondaries show passive dimmed copy" UX
-                // improvement (per plan §11) is a follow-up; for
-                // now a single-window fullscreen loop gives the
-                // user visible cover on every display.
+                // improvement is a follow-up; for now a single-window
+                // fullscreen loop gives the user visible cover on
+                // every display.
                 let monitors = self.app.available_monitors().unwrap_or_default();
                 if monitors.is_empty() {
                     // No monitor info — fall back to a single

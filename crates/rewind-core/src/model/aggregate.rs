@@ -1,8 +1,7 @@
 //! `DailyAggregate` — denormalized daily rollup, keyed on **local** day.
 //!
 //! Treated as a cache, not a source of truth — reconstructable from the
-//! raw tables. See implementation plan §8a. The SQLite-backed repo
-//! lands in M6; M1 ships the DTO.
+//! raw tables. The SQLite-backed repo lives in the `rewind-storage` crate.
 
 use serde::{Deserialize, Serialize};
 

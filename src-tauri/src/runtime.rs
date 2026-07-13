@@ -19,7 +19,7 @@
 //! The engine's `SessionEvent` includes a `BreakFinished` variant
 //! tagged with the outcome; we re-derive `BreakRecord`s from the
 //! pair `(state before, state after)` rather than relying on the
-//! engine to know about `BreakRecord` (cleanest boundary per §5).
+//! engine to know about `BreakRecord` (cleanest boundary).
 //!
 //! Day-rollover is handled by `StorageApp::flush_today(...)` which
 //! always recomputes the day string from the supplied `Timestamp`.

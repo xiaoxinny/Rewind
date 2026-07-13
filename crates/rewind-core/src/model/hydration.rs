@@ -1,7 +1,8 @@
 //! `HydrationEntry` — DTO for a single water-log.
 //!
-//! See implementation plan §8a. Landed as a placeholder in M1 so the
-//! rest of the workspace compiles. Round-trip from `sqlx` lands in M6.
+//! Serialised across the IPC bridge and persisted in SQLite.
+//! The struct mirrors the `hydration` table schema in
+//! `crates/rewind-storage/src/migrations/0001_init.sql`.
 
 use serde::{Deserialize, Serialize};
 

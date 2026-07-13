@@ -1,8 +1,5 @@
 <script lang="ts">
-  // Break overlay shell. Replaces the M0 stub ("lands in M3") which
-  // never got replaced when the rest of M3/M5/M6 shipped, leaving the
-  // four CSS-only exercise components orphaned. See the implementation
-  // plan §3 (UI tree) and §11 (strict-mode kill-switch invariant).
+  // Break overlay shell.
   //
   // The overlay window receives events from the Rust runtime in two
   // places:
@@ -78,7 +75,7 @@
   /** Visible iff a ShowBreak is currently being presented. */
   let visible = $state(false);
   /** Whether the current break is presented in strict mode (kill
-   *  switch is the only escape — no buttons per plan §11). */
+   *  switch is the only escape — no buttons). */
   let strict = $state(false);
   /** Which break kind the engine just announced. Drives the copy. */
   let kind: BreakKind = $state("micro");
@@ -319,11 +316,11 @@
 
   // -------------------------------------------------------------------------
   // Button handlers — gentle mode only. Strict mode renders no
-  // buttons (plan §11 invariant: the kill switch is the only escape).
+  // buttons (kill switch is the only escape).
   // "Done" and "Skip" both route through `skip_break`: the engine
   // treats a manual exit the same way regardless of which button the
   // user pressed; the outcome distinction lives in the persisted
-  // BreakRecord (M3+ storage layer).
+  // BreakRecord (storage layer).
   // -------------------------------------------------------------------------
 
   function handleSkip(): void {
@@ -455,10 +452,10 @@
     background: var(--backdrop-strict);
   }
 
-  /* §10.4 card surface: solid --ink-2 (not rgba — the transparency
+  /* Card surface: solid --ink-2 (not rgba — the transparency
      clashes with the backdrop), 12px radius, hard offset shadow
      (no blur). The single blur shadow from the previous overlay
-     is removed per §1 + §11.3. */
+     is removed. */
   .card {
     position: relative;
     background: var(--ink-2);
@@ -471,7 +468,7 @@
     box-shadow: var(--shadow-hero);
   }
 
-  /* §10.4 strict badge: --danger-soft bg, --danger text, 4px radius. */
+  /* Strict badge: --danger-soft bg, --danger text, 4px radius. */
   .strict-badge {
     position: absolute;
     top: 10px;
@@ -496,7 +493,7 @@
   }
 
   /* Track is the muted hairline at ~8% opacity — represented by the
-     --ink-4 token, which is the "stronger hairline" (§2.1) and reads
+     --ink-4 token, which is the "stronger hairline" and reads
      as faint at the 6px stroke. If we need a bespoke hairline-track
      value later we can add one to Appendix A. */
   .ring-track {
@@ -504,8 +501,8 @@
     opacity: 0.5;
   }
 
-  /* v0.1 keeps the ring stroke on --accent regardless of session state
-     (§10.4); v1.1 swaps in --focus-mode / --micro-break / --rest-break
+  /* v0.1 keeps the ring stroke on --accent regardless of session state;
+     v1.1 swaps in --focus-mode / --micro-break / --rest-break
      per phase. The semantic aliases already exist in tokens.css. */
   .ring-progress {
     stroke: var(--accent);
@@ -540,7 +537,7 @@
   .exercise-host {
     /* Constrain the host so each exercise SVG stays compact inside
        the card instead of overflowing. --ink-3 surface so the
-       exercise art reads as "on a plinth" (§10.4). */
+       exercise art reads as "on a plinth". */
     height: 220px;
     display: grid;
     place-items: center;
@@ -571,7 +568,7 @@
     margin-top: 0.5rem;
   }
 
-  /* §6.3 button variants. Order per the spec: ghost (Skip) →
+  /* Button variants. Order: ghost (Skip) →
      secondary (Postpone) → primary (Done). */
   .btn {
     appearance: none;

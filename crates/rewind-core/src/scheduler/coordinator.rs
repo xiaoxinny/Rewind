@@ -5,7 +5,7 @@
 //! deterministic: all inputs are explicit (`now`, candidates, pause /
 //! coalesce flags, and the coordinator's own last-fired bookkeeping).
 //!
-//! Rules (§7g):
+//! Rules:
 //!   1. Single-flight: at most one surfaced reminder at a time; state
 //!      machine breaks outrank all reminders.
 //!   2. Minimum spacing (`quiet_gap = 90 s`): after any reminder or break
@@ -203,7 +203,7 @@ fn interval_hint_ms(kind: ReminderKind) -> Millis {
     }
 }
 
-/// Helper used by the M5 schedulers — assign a stable priority slot to
+/// Helper used by the schedulers — assign a stable priority slot to
 /// a `ReminderKind`. Mirrors `From<ReminderKind> for Priority`.
 pub fn priority_for(kind: ReminderKind) -> Priority {
     Priority::from(kind)

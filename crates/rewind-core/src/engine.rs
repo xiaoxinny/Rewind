@@ -1,7 +1,7 @@
 //! `Engine` — owns the `SessionMachine`, the `ReminderCoordinator`,
 //! the hydration & posture schedulers, and the current `AppConfig`.
 //!
-//! See implementation plan §7d. Two methods only:
+//! Two methods only:
 //!   * `tick(now: Timestamp, idle: Duration) -> Vec<CoreEvent>`
 //!   * `handle(cmd: CoreCommand) -> Vec<CoreEvent>`
 //!
@@ -221,7 +221,7 @@ impl Engine {
             }
         }
 
-        // 4. Tray status — the highlight of M1.
+        // 4. Tray status.
         let tray = self.compute_tray_status(now);
         self.last_tray_status = Some(tray.clone());
         out.push(CoreEvent::TrayStatus(tray));
@@ -279,7 +279,7 @@ impl Engine {
                 ]
             }
             CoreCommand::IdleObserved(_d) => {
-                // Shell feeds idle via `tick` for M2; this command
+                // Shell feeds idle via `tick`; this command
                 // is reserved for future asynchronous pushes (e.g.
                 // system events).
                 Vec::new()
@@ -344,7 +344,7 @@ impl Engine {
 
     /// Compute the tray-status text + icon hint for the current
     /// engine state. Public so the shell can read it from a separate
-    /// `EngineSnapshot` IPC command (M6).
+    /// `EngineSnapshot` IPC command.
     pub fn compute_tray_status(&self, now: Timestamp) -> TrayStatus {
         let mono = monotonic_ms(now);
         match self.machine.state() {
@@ -437,10 +437,9 @@ fn map_subevents(sub: Vec<SessionEvent>) -> Vec<CoreEvent> {
             }
             SessionEvent::DismissBreak => out.push(CoreEvent::DismissBreak),
             SessionEvent::BreakFinished { .. } => {
-                // M1 doesn't persist BreakRecord; M6 will pipe this
-                // through `HistoryRepo::append_break`. The
-                // DismissBreak + StateChanged already convey the
-                // observable outcome.
+                // BreakRecord persistence goes through
+                // `HistoryRepo::append_break`. The DismissBreak +
+                // StateChanged already convey the observable outcome.
             }
             SessionEvent::TrayLine(_) => {
                 // Engine composes the canonical TrayStatus; we

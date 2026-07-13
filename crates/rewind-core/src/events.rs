@@ -1,6 +1,6 @@
 //! Engine ↔ shell boundary: `CoreEvent` (out) and `CoreCommand` (in).
 //!
-//! See implementation plan §7c. The engine never touches the OS; it
+//! The engine never touches the OS; it
 //! returns `CoreEvent`s, and the shell (`src-tauri`) dispatches them
 //! to adapters and the frontend.
 //!
@@ -18,7 +18,7 @@ use crate::scheduler::reminder::{Priority, Reminder, ReminderKind};
 use crate::session::state::{BreakKind, SessionState, Strictness};
 
 /// How a break should be **presented** to the user. The strictness
-/// path (per §11, §15 DP-5) is decided by the engine based on
+/// path is decided by the engine based on
 /// `AppConfig::strictness` and is consumed by the overlay adapter.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum BreakPresentation {
@@ -33,7 +33,7 @@ impl BreakPresentation {
     /// Pick the right presentation for the current strictness.
     pub fn for_strictness(s: Strictness) -> Self {
         match s {
-            // §11: "Gentle = the default". Strict is the only
+            // "Gentle = the default". Strict is the only
             // branch that escalates to a full-screen capture.
             Strictness::Strict => BreakPresentation::Strict,
             Strictness::Normal | Strictness::Gentle => BreakPresentation::Gentle,
@@ -72,13 +72,13 @@ impl HydrationProgress {
 
 /// What the tray should display right now. The shell calls
 /// `Tray::set_status` whenever one of these is emitted. The
-/// `tooltip_line` is the bread-and-butter countdown — M1's primary
-/// visible behaviour.
+/// `tooltip_line` is the primary visible behaviour — the countdown
+/// displayed over the tray icon.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TrayStatus {
     /// Short title for some platforms (e.g. macOS).
     pub title: String,
-    /// Tooltip text. M1 cycles between "Next break in 19:42",
+    /// Tooltip text. Cycles between "Next break in 19:42",
     /// "Micro break 0:18" and "Paused".
     pub tooltip_line: String,
     /// Optional emoji/glyph used by hosts that support it.
@@ -86,7 +86,7 @@ pub struct TrayStatus {
 }
 
 impl TrayStatus {
-    /// Convenience constructor for the most common M1 case.
+    /// Convenience constructor for the most common countdown case.
     pub fn countdown(next_break_in: Duration) -> Self {
         let secs = next_break_in.as_secs();
         let m = secs / 60;
@@ -139,7 +139,7 @@ impl TrayStatus {
 }
 
 /// A menu item the tray surface should show. Clicks come back as a
-/// `CoreCommand`. See §7b.
+/// `CoreCommand`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TrayMenuItem {
     pub id: String,
@@ -200,7 +200,7 @@ pub enum CoreEvent {
 
     /// A 1 Hz heartbeat carrying the current phase + remaining
     /// countdown. Drives the tray tooltip. Always emitted on every
-    /// tick from M2 onward; M1 emits it opportunistically from the
+    /// tick; the shell also emits it opportunistically from the
     /// IPC layer.
     Tick {
         phase: SessionState,
@@ -215,7 +215,7 @@ pub enum CoreEvent {
     ShowBreak {
         kind: BreakKind,
         presentation: BreakPresentation,
-        /// Optional suggested exercise id (rest breaks in M4).
+        /// Optional suggested exercise id (rest breaks).
         #[serde(default, skip_serializing_if = "Option::is_none")]
         exercise_id: Option<String>,
     },
@@ -265,9 +265,9 @@ impl CoreEvent {
 /// these.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum CoreCommand {
-    /// User asked to (re)start the focus cycle. For M1 this is a
-    /// no-op while already in Focus; future milestones may surface
-    /// "session start" semantics.
+    /// User asked to (re)start the focus cycle. A no-op while
+    /// already in Focus; future versions may surface "session start"
+    /// semantics.
     StartFocus,
     /// Toggle manual pause/resume.
     PauseToggle,
@@ -277,9 +277,9 @@ pub enum CoreCommand {
     PostponeBreak,
     /// Log water consumption.
     LogWater(u32 /* ml */),
-    /// Feed the engine an external idle observation. M1 ignores this
-    /// (idle adapter lands in M2); the shell wires it through to
-    /// prepare for M2.
+    /// Feed the engine an external idle observation. The shell
+    /// wires it through to the engine for asynchronous idle
+    /// pushes (e.g. system events).
     IdleObserved(Duration),
     /// Replace the entire config (the IPC layer merges & validates).
     ConfigUpdated(AppConfig),
@@ -290,7 +290,7 @@ pub enum CoreCommand {
 
 /// Public re-export alias so consumers can name "the config snapshot
 /// type" without importing the full `AppConfig`. Currently a plain
-/// type alias — the snapshot view lands in M6.
+/// type alias — the snapshot view lives in the engine.
 pub type CoreConfigSnapshot = crate::config::AppConfig;
 
 #[cfg(test)]

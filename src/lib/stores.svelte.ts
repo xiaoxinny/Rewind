@@ -1,5 +1,5 @@
-// Svelte 5 runes-based reactive mirror of the engine's state. M6
-// replaces the M0 stub with a full shape:
+// Svelte 5 runes-based reactive mirror of the engine's state.
+// Replaces a stub with a full shape:
 //   * state, remainingMs, hydration — driven by `core-event`
 //   * config — read via `get_engine_snapshot`, written via `update_config`
 //   * today + recentSessions — reads from the SQLite-backed `StorageApp`
@@ -58,8 +58,8 @@ interface ReactiveState {
   /** Last N hydration entries for the Stats page. */
   recentHydration: HydrationEntry[];
   /** Whether the idle adapter reports `Reliable` — gates the idle
-   *  controls in Settings (per §13, "auto-greyed with explanation
-   *  on GNOME Wayland"). */
+   *  controls in Settings — auto-greyed with explanation
+   *  on GNOME Wayland. */
   idleReliable: boolean;
   /** UI-level transient state — true after the user clicks "Pause"
    *  and the engine confirms. */
@@ -164,7 +164,7 @@ export function setEngineState(ev: CoreEvent): void {
     case "fire_reminder":
     case "tray_menu":
       // Display-layer ignores these; the dashboard surfaces
-      // hydration/posture nudges via separate toasts (roadmap).
+      // hydration/posture nudges via separate toasts.
       break;
   }
 }

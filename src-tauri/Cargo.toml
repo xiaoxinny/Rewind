@@ -34,7 +34,7 @@ rewind-storage = { path = "../crates/rewind-storage" }
 # plugins that load icons from bytes.
 tauri = { workspace = true, features = ["image-png"] }
 
-# Tauri v2 plugins — see implementation plan §4.
+# Tauri v2 plugins for desktop integration.
 tauri-plugin-notification = { workspace = true }
 tauri-plugin-autostart = { workspace = true }
 tauri-plugin-global-shortcut = { workspace = true }

@@ -1,7 +1,6 @@
 // TypeScript mirror of `rewind-core` types. Keep in sync with the Rust
-// definitions — see implementation plan §10 and §7c. M6 ships the
-// full mirror: every CoreEvent / CoreCommand / AppConfig / DTO shape
-// the engine emits on the IPC bridge.
+// definitions. The full mirror: every CoreEvent / CoreCommand /
+// AppConfig / DTO shape the engine emits on the IPC bridge.
 
 export type Millis = number;
 

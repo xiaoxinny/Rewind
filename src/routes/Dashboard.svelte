@@ -1,6 +1,5 @@
 <script lang="ts">
   // Dashboard — primary surface: today's rollup + quick actions.
-  // M6 replaces the M0 placeholder cards with a real summary.
 
   import {
     hydrationProgress,
@@ -157,8 +156,8 @@
     font-size: 1.1rem;
     color: var(--text);
     font-family: var(--font-display);
-    /* DESIGN_LANGUAGE.md §10.1 drops the ALL-CAPS transform — "Today"
-       stays sentence case. The `<h3>` tiles are already not uppercase. */
+    /* "Today" heading; stays sentence case. The `<h3>` tiles are
+       already not uppercase. */
   }
 
   .hero-label {
@@ -197,9 +196,9 @@
     font-size: 0.9rem;
   }
 
-  /* Paused banner (DESIGN_LANGUAGE.md §6.7 — `<Banner variant="paused">`).
+  /* Paused banner — uses `<Banner variant="paused">`.
      In v0.1 the Banner component is not yet extracted (Track 3 PR 3);
-     the inline shape here matches the language spec: --ink-3 surface,
+     the inline shape here matches the design language: --ink-3 surface,
      --text-muted left-border, --text-2 copy. The ⏸ emoji is removed
      in PR 3; v0.1.1 ships the icon-replace. */
   .paused-banner {
@@ -232,7 +231,7 @@
   }
 
   .quick-actions button.primary {
-    /* Per §6.3: one primary button per screen. Pause / Resume swaps
+    /* One primary button per screen. Pause / Resume swaps
        into the primary slot; the label and aria follow. */
     background: var(--accent);
     border-color: var(--accent);

@@ -1,6 +1,5 @@
-//! `wiring.rs` — the shell's composition root (per implementation
-//! plan §9). The `setup` closure calls `Wiring::build(...)` once at
-//! boot, which:
+//! `wiring.rs` — the shell's composition root. The `setup` closure
+//! calls `Wiring::build(...)` once at boot, which:
 //!
 //! 1. Picks the platform-appropriate `IdleSource` (X11, Wayland,
 //!    fallback to degraded — same picker the `rewind-adapters` crate
@@ -14,7 +13,7 @@
 //! On a real platform mismatch (e.g. X11-only `user_idle` binary on
 //! a GNOME Wayland session), the picker returns a `DegradedIdleSource`
 //! and `IdleSource::reliability()` reads `Unreliable` — the engine
-//! already downgrades to timer-only mode on its own (§7f).
+//! already downgrades to timer-only mode on its own.
 
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
