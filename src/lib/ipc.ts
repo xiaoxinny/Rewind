@@ -110,6 +110,14 @@ export const getPauseReasonLabel = (reason: PauseReason): Promise<string> =>
   invoke<string>("get_pause_reason_label", { reason });
 
 // ---------------------------------------------------------------------------
+// Uninstall — removes the binary + all user data, then exits the process.
+// The frontend must show a confirmation modal BEFORE calling this.
+// ---------------------------------------------------------------------------
+
+export const uninstallAndExit = (): Promise<void> =>
+  invoke<void>("uninstall_and_exit");
+
+// ---------------------------------------------------------------------------
 // Event subscription — wraps Tauri's `listen` with strict typing.
 // Returns the `UnlistenFn` so callers can drop the subscription.
 // ---------------------------------------------------------------------------

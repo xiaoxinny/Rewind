@@ -30,6 +30,7 @@ mod overlay_adapter;
 mod runtime;
 mod storage_app;
 mod storage_helpers;
+mod uninstall;
 mod wiring;
 
 pub use adapters::Adapters;
@@ -41,6 +42,7 @@ pub use ipc::{
     set_autostart, set_strictness, skip_break, start_focus, update_config, EngineSnapshot,
     ExportPayload,
 };
+pub use uninstall::uninstall_and_exit;
 pub use storage_app::{StorageApp, StorageAppError};
 pub use wiring::Wiring;
 
@@ -141,6 +143,7 @@ pub fn run() {
             clear_history,
             get_break_kind_label,
             get_pause_reason_label,
+            uninstall::uninstall_and_exit,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -52,6 +52,31 @@ tar -xzf rewind-v0.1.0-x86_64-unknown-linux-gnu.tar.gz
 
 The tarball ships the bare `rewind` binary plus a `README.install.md` listing the runtime libraries the dynamic loader resolves at start (WebKitGTK 4.1, GTK 3, librsvg, libayatana-appindicator). It does not ship an autostart entry or a `.desktop` file.
 
+## Uninstall
+
+Click **Uninstall Rewind** at the bottom of **Settings → System**. The app
+removes itself and your data (history, settings, autostart entry) from
+your computer.
+
+If Rewind won't launch or the in-app uninstall fails, you can clean up by
+hand with the bundled scripts:
+
+```sh
+# Linux
+./scripts/uninstall-linux.sh
+
+# macOS
+./scripts/uninstall-macos.sh
+
+# Windows (PowerShell)
+./scripts/uninstall-windows.ps1
+```
+
+These scripts are idempotent and refuse to run with sudo unless explicitly
+asked. After they finish, you can remove the `Rewind` entry from your
+applications menu by deleting the cached icon, but the application itself
+is already gone.
+
 ## Build from source
 
 Prerequisites: Rust stable (1.80+), Node.js 20 LTS, and the Tauri v2 system packages for your OS (`libwebkit2gtk-4.1-dev`, `libgtk-3-dev`, `libayatana-appindicator3-dev`, `librsvg2-dev`, `patchelf` on Debian/Ubuntu; WebView2 + Visual Studio Build Tools on Windows; Xcode Command Line Tools on macOS).

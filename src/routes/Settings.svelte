@@ -18,7 +18,7 @@
     setStrictness,
   } from "../lib/stores.svelte";
   import { state as mirror } from "../lib/stores.svelte";
-  import { setAutostart } from "../lib/ipc";
+  import { setAutostart, uninstallAndExit } from "../lib/ipc";
   import { restart as restartOnboarding } from "../lib/onboarding.svelte";
   import type {
     AppConfig,
@@ -86,6 +86,9 @@
     row_count: number;
   } | null>(null);
 
+  let uninstallConfirmOpen = $state(false);
+  let uninstalling = $state(false);
+
   async function doExport(): Promise<void> {
     try {
       exportPayload = await exportDataAction();
@@ -125,6 +128,23 @@
       await updateSystem({ autostart: newStatus });
     } catch (e) {
       exportStatus = `Autostart change failed: ${e}`;
+    }
+  }
+
+  function openUninstallModal(): void {
+    uninstallConfirmOpen = true;
+  }
+
+  async function confirmUninstall(): Promise<void> {
+    uninstalling = true;
+    try {
+      await uninstallAndExit();
+    } catch {
+      // The process exits during this call; if it somehow didn't,
+      // surface the error.
+      uninstalling = false;
+      uninstallConfirmOpen = false;
+      exportStatus = "Uninstall failed — try the fallback script in the scripts/ directory.";
     }
   }
 
@@ -557,6 +577,59 @@
       </span>
     </p>
   </details>
+
+  <!-- ============================= Uninstall ============================ -->
+  <div class="uninstall-section">
+    <div class="uninstall-info">
+      <p class="uninstall-label">Uninstall</p>
+      <p class="uninstall-desc">Remove Rewind and its data from this computer.</p>
+    </div>
+    <button
+      type="button"
+      class="uninstall-btn"
+      onclick={openUninstallModal}
+    >
+      Uninstall Rewind
+    </button>
+  </div>
+
+  {#if uninstallConfirmOpen}
+    <div
+      class="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="uninstall-modal-title"
+    >
+      <div class="modal-card">
+        <h3 id="uninstall-modal-title">Uninstall Rewind?</h3>
+        <p class="modal-body">
+          This will delete Rewind and all its settings, history, and
+          hydration data from this computer. This cannot be undone.
+        </p>
+        {#if uninstalling}
+          <p class="modal-status">Uninstalling, closing…</p>
+        {/if}
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="modal-cancel"
+            onclick={() => (uninstallConfirmOpen = false)}
+            disabled={uninstalling}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="modal-confirm"
+            onclick={confirmUninstall}
+            disabled={uninstalling}
+          >
+            {uninstalling ? "Uninstalling…" : "Uninstall"}
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
 </section>
 
 <style>
@@ -769,6 +842,138 @@
     font-size: 0.85rem;
     line-height: 1.4;
   }
+
+  /* ============================ Uninstall ============================= */
+  .uninstall-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0.875rem;
+    border-top: 1px solid var(--hairline);
+    margin-top: 0.5rem;
+  }
+  .uninstall-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .uninstall-label {
+    font-weight: 600;
+    margin: 0;
+    color: var(--text);
+  }
+  .uninstall-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .uninstall-btn {
+    appearance: none;
+    background: var(--danger-soft);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 0.4rem 0.875rem;
+    border-radius: var(--radius-input);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    transition: border-color var(--dur-small) var(--ease),
+      background var(--dur-small) var(--ease);
+  }
+  .uninstall-btn:hover {
+    background: var(--danger);
+    color: #fff;
+  }
+  .uninstall-btn:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* ============================ Modal ================================= */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  .modal-card {
+    background: var(--ink-2);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
+    padding: 1.25rem 1.5rem;
+    max-width: 380px;
+    width: calc(100% - 2rem);
+    box-sizing: border-box;
+  }
+  .modal-card h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .modal-body {
+    margin: 0 0 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--text-2);
+  }
+  .modal-status {
+    margin: 0 0 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  .modal-cancel,
+  .modal-confirm {
+    appearance: none;
+    padding: 0.4rem 0.875rem;
+    border-radius: var(--radius-input);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.875rem;
+    transition: border-color var(--dur-small) var(--ease),
+      background var(--dur-small) var(--ease);
+  }
+  .modal-cancel {
+    background: var(--ink-3);
+    border: 1px solid var(--hairline);
+    color: var(--text);
+  }
+  .modal-cancel:hover {
+    border-color: var(--accent);
+  }
+  .modal-cancel:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .modal-confirm {
+    background: var(--danger);
+    border: 1px solid var(--danger);
+    color: #fff;
+  }
+  .modal-confirm:hover {
+    opacity: 0.9;
+  }
+  .modal-confirm:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .modal-confirm:disabled,
+  .modal-cancel:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   code {
     background: var(--ink);
     padding: 0 0.25rem;
