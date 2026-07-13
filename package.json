@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Rewind — calm, privacy-first desktop wellness companion.",
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "scripts": {
     "dev": "vite",
     "build": "svelte-check --tsconfig ./tsconfig.json && vite build",

@@ -21,7 +21,13 @@ The whole thing is idle-aware. Step away for 90 s and the timers pause. Step awa
 
 ## Install on Linux (x86_64)
 
-The `v0.1.0` release ships three portable artifacts. macOS and Windows binaries are not attached to this release; the CI workflow at `.github/workflows/release.yml` builds them automatically on every `v*` tag and uploads them to the matching release page — they will appear on the next tag. Until then, build from source below.
+The `v0.1.0` release ships nine binaries across three platforms:
+
+- Linux: `.deb` (Debian/Ubuntu), `.rpm` (Fedora/RHEL), and `.AppImage` (universal).
+- macOS: `.dmg` for Apple Silicon (M1+), `.dmg` for Intel, plus raw `.app.tar.gz` for both.
+- Windows: `.msi` (Enterprise) and `.exe` NSIS installer.
+
+Download the artifact that matches your platform from the release page.
 
 ### Debian / Ubuntu (.deb)
 
@@ -50,7 +56,7 @@ tar -xzf rewind-v0.1.0-x86_64-unknown-linux-gnu.tar.gz
 ./rewind
 ```
 
-The tarball ships the bare `rewind` binary plus a `README.install.md` listing the runtime libraries the dynamic loader resolves at start (WebKitGTK 4.1, GTK 3, librsvg, libayatana-appindicator). It does not ship an autostart entry or a `.desktop` file.
+The tarball ships the bare `rewind` binary. It does not ship an autostart entry, a `.desktop` file, or a system-integrated launcher entry — use the in-app Settings → Autostart toggle after first run to enable autostart, and run the binary directly or create a launcher entry yourself.
 
 ## Uninstall
 
@@ -125,7 +131,7 @@ The core is testable end-to-end with `FakeClock` + `FakeIdleSource` (see `crates
 
 ## License
 
-AGPL-3.0. See `LICENSE`. A note on the metadata: `Cargo.toml` and `package.json` still report `license = "MIT"` because those fields were never updated when the project moved to AGPL-3.0. The `LICENSE` file is the source of truth; the metadata fields will be reconciled in a later release.
+AGPL-3.0. See `LICENSE`. The `Cargo.toml` and `package.json` metadata fields were updated to match in this release.
 
 The AGPL is the right license for a desktop app that wants to stay open and prevent a closed-source SaaS fork. If you want to embed Rewind's break-engine in a closed-source commercial product, contact the maintainer; a commercial licence is on the roadmap.
 
